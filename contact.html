@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Əlaqə — MikroTools</title>
+<meta name="description" content="MikroTools ilə əlaqə: sual, təklif və xəta bildirişi üçün bizə yazın.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5236234559178593" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#09090f;--panel:#12121d;--ink:#f1f1ff;--muted:#a8a8c6;--purple:#a855f7;--cyan:#22d3ee;--line:#2c2c44}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px}
+nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 0 20px;border-bottom:3px solid var(--purple);margin-bottom:26px}
+nav a.logo{color:var(--ink);font-weight:700;font-size:1.3rem;text-decoration:none}nav a.logo b{color:var(--cyan)}
+nav div a{color:var(--cyan);margin-left:14px;font-size:.95rem}
+h1{font-size:2rem;margin-bottom:10px}
+p{color:var(--muted);margin-bottom:12px}
+a{color:var(--cyan)}
+.box{background:var(--panel);border:3px solid var(--ink);border-radius:12px;padding:20px;box-shadow:6px 6px 0 var(--cyan);margin-top:20px}
+label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin:12px 0 5px;text-transform:uppercase}
+input,textarea{width:100%;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 12px;font:inherit;outline:none}
+input:focus,textarea:focus{border-color:var(--purple)}
+textarea{min-height:140px;resize:vertical}
+button{margin-top:16px;cursor:pointer;background:var(--purple);color:#fff;font-weight:700;border:3px solid var(--ink);border-radius:8px;padding:10px 20px;box-shadow:4px 4px 0 var(--ink);font:inherit;font-weight:700}
+footer{margin-top:40px;padding-top:18px;border-top:2px solid var(--line);text-align:center;color:#7c7c9c;font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a class="logo" href="/">Mikro<b>Tools</b></a><div><a href="/">Ana səhifə</a><a href="privacy.html">Məxfilik</a><a href="terms.html">Şərtlər</a></div></nav>
+
+<h1>Əlaqə</h1>
+<p>Sualınız, təklifiniz və ya tapdığınız xəta varsa, bizə yazın. Adətən 2–3 iş günü ərzində cavab veririk.</p>
+<p>E-poçt: <a href="mailto:SIZIN_EMAIL@gmail.com">SIZIN_EMAIL@gmail.com</a></p>
+
+<div class="box">
+<!-- Forma "göndər" düyməsinə basanda istifadəçinin e-poçt proqramını açır (serversiz). -->
+<form id="f">
+<label>Adınız</label><input id="n" type="text" required>
+<label>E-poçtunuz</label><input id="e" type="email" required>
+<label>Mövzu</label><input id="s" type="text" value="MikroTools haqqında">
+<label>Mesaj</label><textarea id="m" required></textarea>
+<button type="submit">Göndər</button>
+</form>
+</div>
+
+<footer>© MikroTools · <a href="/">Ana səhifə</a></footer>
+</div>
+<script>
+document.getElementById('f').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var body = 'Ad: ' + n.value + '\nE-poçt: ' + e.value + '\n\n' + m.value;
+  location.href = 'mailto:SIZIN_EMAIL@gmail.com?subject=' + encodeURIComponent(s.value) + '&body=' + encodeURIComponent(body);
+});
+</script>
+</body>
+</html>
