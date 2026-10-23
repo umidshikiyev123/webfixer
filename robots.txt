@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://webfixer.space/sitemap.xml
