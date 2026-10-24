@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Parol / Açar Generatoru", "url": "https://webfixer.space/parol-generatoru.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Güclü parol, hex açar və API token yaradın.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Yaranan parollar harada saxlanılır?", "acceptedAnswer": {"@type": "Answer", "text": "Heç harada. Parol yalnız ekranınızda yaranır, biz onu görmürük və saxlamırıq. Səhifəni bağladıqda yox olur."}}, {"@type": "Question", "name": "Ən təhlükəsiz parol uzunluğu nə qədərdir?", "acceptedAnswer": {"@type": "Answer", "text": "Gündəlik hesablar üçün 14-16 simvol, vacib hesablar (e-poçt, bank) üçün 20 və daha çox simvol məsləhətdir."}}, {"@type": "Question", "name": "Hex açar və token nə üçündür?", "acceptedAnswer": {"@type": "Answer", "text": "Proqramçılar bunları API açarı, sessiya tokeni və ya şifrələmə üçün gizli dəyər kimi istifadə edir."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
@@ -39,6 +40,7 @@
 <nav class="nav" aria-label="Əsas menyu">
 <a href="/">Ana səhifə</a>
 <a href="/#tools">Alətlər</a>
+<a href="/haqqinda.html">Haqqında</a>
 <a href="/contact.html">Əlaqə</a>
 </nav>
 </div>
@@ -87,6 +89,16 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <section class="about reveal">
 <h3>Güclü parol necə olmalıdır?</h3><ul><li>Ən azı 14–16 simvol uzunluğunda olmalıdır.</li><li>Böyük və kiçik hərf, rəqəm və simvol qarışığı olmalıdır.</li><li>Hər sayt üçün fərqli parol istifadə edin.</li><li>Parolları parol menecerində saxlayın.</li></ul><h3>Təhlükəsizlik</h3><p>Parollar brauzerinizin təhlükəsiz təsadüfi ədəd generatoru (crypto.getRandomValues) ilə yaradılır və heç bir yerə göndərilmir. "Güc" göstəricisi entropiya (bit) hesabına əsaslanır: 64 bitdən yuxarı güclü, 100 bitdən yuxarı çox güclü sayılır.</p>
 </section>
+<section class="about guide reveal">
+<h2>Ətraflı bələdçi</h2>
+<p>Zəif və təkrar istifadə olunan parollar hesabların oğurlanmasının əsas səbəbidir. Bu alət təsadüfi, güclü parollar, hex açarlar və API tokenlər yaradır. Generasiya brauzerin kriptoqrafik təsadüfi ədəd mexanizmi ilə edilir, yəni nəticələri proqnozlaşdırmaq mümkün deyil. Yaranan parol heç bir yerə göndərilmir.</p>
+<h3>Faydalı məsləhətlər</h3>
+<ul><li>Hər sayt üçün ayrı parol istifadə edin. Biri sızsa, qalan hesablar təhlükəyə düşməsin.</li><li>Uzunluq mürəkkəblikdən vacibdir: 16 və daha çox simvol uzunluğunda təsadüfi parol praktiki olaraq sındırıla bilməz.</li><li>Parolları yadda saxlamaq əvəzinə parol meneceri (məsələn brauzerin daxili meneceri və ya ayrıca proqram) istifadə edin.</li><li>Mümkün olan yerdə iki mərhələli doğrulamanı (2FA) aktiv edin.</li></ul>
+</section>
+<section class="guide-faq reveal">
+<h2>Tez-tez verilən suallar</h2>
+<div class="faq"><details><summary>Yaranan parollar harada saxlanılır?</summary><p>Heç harada. Parol yalnız ekranınızda yaranır, biz onu görmürük və saxlamırıq. Səhifəni bağladıqda yox olur.</p></details><details><summary>Ən təhlükəsiz parol uzunluğu nə qədərdir?</summary><p>Gündəlik hesablar üçün 14-16 simvol, vacib hesablar (e-poçt, bank) üçün 20 və daha çox simvol məsləhətdir.</p></details><details><summary>Hex açar və token nə üçündür?</summary><p>Proqramçılar bunları API açarı, sessiya tokeni və ya şifrələmə üçün gizli dəyər kimi istifadə edir.</p></details></div>
+</section>
 <section class="related">
 <h2 class="reveal">Digər alətlər</h2>
 <div class="grid">
@@ -127,7 +139,7 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <div><a class="logo" href="/"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Mikro<b>Tools</b></span></a>
 <p>Gündəlik işlər üçün pulsuz, qeydiyyatsız və təhlükəsiz onlayn alətlər. Hamısı brauzerinizdə işləyir.</p></div>
 <div><h4>Alətlər</h4><a href="/arasdirma.html">Araşdırma Köməkçisi</a><a href="/sekil-olcusu.html">Şəkil Ölçüsü &amp; Konvertor</a><a href="/metn-aletleri.html">Mətn Alətləri</a><a href="/parol-generatoru.html">Parol / Açar Generatoru</a><a href="/qr-kod.html">QR Kod Generatoru</a><a href="/#tools">Hamısına bax →</a></div>
-<div><h4>Məlumat</h4><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
+<div><h4>Məlumat</h4><a href="/haqqinda.html">Haqqında</a><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
 </div>
 <div class="copy">© <span id="year">2026</span> MikroTools · Bütün hüquqlar qorunur</div>
 </div>

@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "JSON Formatlayıcı", "url": "https://webfixer.space/json-formatlayici.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "JSON-u səliqəyə salın, sıxışdırın və səhvlərini sətir/sütun ilə tapın.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Formatlama JSON-un mənasını dəyişirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Xeyr. Yalnız boşluqlar və sətir sonları dəyişir, məlumat eyni qalır."}}, {"@type": "Question", "name": "Şərh (comment) yazmaq olarmı?", "acceptedAnswer": {"@type": "Answer", "text": "Standart JSON-da şərh yoxdur. Şərhli fayl (JSONC) bu alətdə səhv kimi göstərilə bilər."}}, {"@type": "Question", "name": "Çox böyük JSON işləyirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Bir neçə meqabayta qədər rahat işləyir. Daha böyük fayllar brauzeri yavaşlada bilər."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
@@ -39,6 +40,7 @@
 <nav class="nav" aria-label="Əsas menyu">
 <a href="/">Ana səhifə</a>
 <a href="/#tools">Alətlər</a>
+<a href="/haqqinda.html">Haqqında</a>
 <a href="/contact.html">Əlaqə</a>
 </nav>
 </div>
@@ -87,6 +89,16 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <section class="about reveal">
 <h3>Nə üçündür?</h3><p>API cavabını, konfiqurasiya faylını və ya məlumat nümunəsini oxunaqlı formata salmaq (formatla), ölçüsünü azaltmaq (sıxışdır) və düzgünlüyünü yoxlamaq üçün.</p><h3>Səhv tapmaq</h3><p>JSON yanlışdırsa, alət səhvin yerini sətir və sütun nömrəsi ilə göstərir. Ən çox rast gəlinən səhvlər: son elementdən sonra artıq vergül, tək dırnaq (JSON-da yalnız qoşa dırnaq olur), dırnaqsız açar adları və yarımçıq mötərizələr.</p><h3>Məxfilik</h3><p>JSON məzmunu serverə göndərilmir, emal brauzerinizdə gedir.</p>
 </section>
+<section class="about guide reveal">
+<h2>Ətraflı bələdçi</h2>
+<p>JSON API cavablarında, konfiqurasiya fayllarında və məlumat mübadiləsində ən çox istifadə olunan formatdır. Bu alət JSON-u oxunaqlı (girintili) formaya salır, ölçüsünü azaltmaq üçün sıxışdırır və düzgün olub-olmadığını yoxlayır. Səhv olduqda xətanın sətir və sütun nömrəsini göstərir ki, tez tapıb düzəldə biləsiniz.</p>
+<h3>Faydalı məsləhətlər</h3>
+<ul><li>JSON-da açarlar və mətn dəyərləri yalnız cüt dırnaqla (&quot;...&quot;) yazılır. Tək dırnaq səhvdir.</li><li>Son elementdən sonra vergül qoymaq ən çox rast gəlinən səhvlərdəndir ({&quot;a&quot;:1,} yanlışdır).</li><li>Açarları əlifba sırası ilə düzmək iki JSON-u müqayisə edəndə faydalıdır.</li><li>Məxfi API açarlarını və şəxsi məlumatları ictimai alətlərə yapışdırmaqdan ehtiyatlı olun. Bu alət heç nə göndərməsə də, ümumi qayda belədir.</li></ul>
+</section>
+<section class="guide-faq reveal">
+<h2>Tez-tez verilən suallar</h2>
+<div class="faq"><details><summary>Formatlama JSON-un mənasını dəyişirmi?</summary><p>Xeyr. Yalnız boşluqlar və sətir sonları dəyişir, məlumat eyni qalır.</p></details><details><summary>Şərh (comment) yazmaq olarmı?</summary><p>Standart JSON-da şərh yoxdur. Şərhli fayl (JSONC) bu alətdə səhv kimi göstərilə bilər.</p></details><details><summary>Çox böyük JSON işləyirmi?</summary><p>Bir neçə meqabayta qədər rahat işləyir. Daha böyük fayllar brauzeri yavaşlada bilər.</p></details></div>
+</section>
 <section class="related">
 <h2 class="reveal">Digər alətlər</h2>
 <div class="grid">
@@ -127,7 +139,7 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <div><a class="logo" href="/"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Mikro<b>Tools</b></span></a>
 <p>Gündəlik işlər üçün pulsuz, qeydiyyatsız və təhlükəsiz onlayn alətlər. Hamısı brauzerinizdə işləyir.</p></div>
 <div><h4>Alətlər</h4><a href="/arasdirma.html">Araşdırma Köməkçisi</a><a href="/sekil-olcusu.html">Şəkil Ölçüsü &amp; Konvertor</a><a href="/metn-aletleri.html">Mətn Alətləri</a><a href="/parol-generatoru.html">Parol / Açar Generatoru</a><a href="/qr-kod.html">QR Kod Generatoru</a><a href="/#tools">Hamısına bax →</a></div>
-<div><h4>Məlumat</h4><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
+<div><h4>Məlumat</h4><a href="/haqqinda.html">Haqqında</a><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
 </div>
 <div class="copy">© <span id="year">2026</span> MikroTools · Bütün hüquqlar qorunur</div>
 </div>

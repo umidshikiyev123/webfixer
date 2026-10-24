@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Base64 / URL Kodlayıcı", "url": "https://webfixer.space/base64-url.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Mətni Base64 və URL formatına kodlayın və geri açın (UTF-8, Azərbaycan hərfləri ilə).", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Base64 nə üçün işlədilir?", "acceptedAnswer": {"@type": "Answer", "text": "E-poçt əlavələrində, JSON-da şəkil ötürmək üçün, HTTP başlıqlarında və tokenlərdə məlumatı mətn şəklində daşımaq üçün."}}, {"@type": "Question", "name": "Niyə açanda xəta çıxır?", "acceptedAnswer": {"@type": "Answer", "text": "Sətir düzgün Base64 deyil, ya da kəsilib. Boşluq və ya artıq simvolların olmadığını yoxlayın."}}, {"@type": "Question", "name": "Daxil etdiyim mətn serverə göndərilirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Xeyr, çevirmə brauzerdə aparılır."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
@@ -39,6 +40,7 @@
 <nav class="nav" aria-label="Əsas menyu">
 <a href="/">Ana səhifə</a>
 <a href="/#tools">Alətlər</a>
+<a href="/haqqinda.html">Haqqında</a>
 <a href="/contact.html">Əlaqə</a>
 </nav>
 </div>
@@ -87,6 +89,16 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <section class="about reveal">
 <h3>Base64 nədir?</h3><p>Base64 mətni və ya ikili məlumatı yalnız hərf, rəqəm və bir neçə simvoldan ibarət mətnə çevirən kodlaşdırmadır. E-poçt, JSON və URL daxilində məlumat ötürəndə işlədilir. Bu şifrələmə deyil, hər kəs onu geri aça bilər, ona görə gizli məlumatı qorumaq üçün istifadə etməyin.</p><h3>URL kodlaşdırma</h3><p>Linkdə boşluq, &amp;, = və Azərbaycan hərfləri kimi simvollar %20, %26, %C9%99 formasına salınır. Alət UTF-8 ilə işləyir, ə, ş, ç kimi hərflər düzgün çevrilir.</p><h3>Base64URL</h3><p>Linklər üçün təhlükəsiz variantdır: + və / əvəzinə - və _ işlədilir, sondakı = silinir (JWT və API tokenlərində rast gəlinir).</p>
 </section>
+<section class="about guide reveal">
+<h2>Ətraflı bələdçi</h2>
+<p>Base64 və URL kodlaşdırma proqramçıların hər gün rast gəldiyi çevirmələrdir. Base64 mətni və ya ikili məlumatı yalnız təhlükəsiz simvollardan ibarət sətrə çevirir, URL kodlaşdırma isə linkdə xüsusi simvolları (boşluq, &amp;, =, ə, ş və s.) % ilə başlayan formada yazır. Alət UTF-8-i düzgün işləyir, ona görə Azərbaycan hərfləri pozulmur.</p>
+<h3>Faydalı məsləhətlər</h3>
+<ul><li>Base64 şifrələmə deyil, sadəcə kodlaşdırmadır. Hər kəs onu geri aça bilər, parol və ya gizli məlumatı onunla qorumaq olmaz.</li><li>Linkdə istifadə üçün Base64URL variantını seçin: + və / simvollarının yerinə - və _ yazılır.</li><li>Axtarış parametrlərini (məsələn ?q=salam dünya) göndərməzdən əvvəl URL kodlayın.</li></ul>
+</section>
+<section class="guide-faq reveal">
+<h2>Tez-tez verilən suallar</h2>
+<div class="faq"><details><summary>Base64 nə üçün işlədilir?</summary><p>E-poçt əlavələrində, JSON-da şəkil ötürmək üçün, HTTP başlıqlarında və tokenlərdə məlumatı mətn şəklində daşımaq üçün.</p></details><details><summary>Niyə açanda xəta çıxır?</summary><p>Sətir düzgün Base64 deyil, ya da kəsilib. Boşluq və ya artıq simvolların olmadığını yoxlayın.</p></details><details><summary>Daxil etdiyim mətn serverə göndərilirmi?</summary><p>Xeyr, çevirmə brauzerdə aparılır.</p></details></div>
+</section>
 <section class="related">
 <h2 class="reveal">Digər alətlər</h2>
 <div class="grid">
@@ -127,7 +139,7 @@ data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true
 <div><a class="logo" href="/"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Mikro<b>Tools</b></span></a>
 <p>Gündəlik işlər üçün pulsuz, qeydiyyatsız və təhlükəsiz onlayn alətlər. Hamısı brauzerinizdə işləyir.</p></div>
 <div><h4>Alətlər</h4><a href="/arasdirma.html">Araşdırma Köməkçisi</a><a href="/sekil-olcusu.html">Şəkil Ölçüsü &amp; Konvertor</a><a href="/metn-aletleri.html">Mətn Alətləri</a><a href="/parol-generatoru.html">Parol / Açar Generatoru</a><a href="/qr-kod.html">QR Kod Generatoru</a><a href="/#tools">Hamısına bax →</a></div>
-<div><h4>Məlumat</h4><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
+<div><h4>Məlumat</h4><a href="/haqqinda.html">Haqqında</a><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a><a href="mailto:umidshk@gmail.com">umidshk@gmail.com</a></div>
 </div>
 <div class="copy">© <span id="year">2026</span> MikroTools · Bütün hüquqlar qorunur</div>
 </div>
