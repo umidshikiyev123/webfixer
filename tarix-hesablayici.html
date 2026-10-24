@@ -27,12 +27,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
+<script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Tarix Hesablayıcı", "url": "https://webfixer.space/tarix-hesablayici.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "İki tarix arasındakı fərqi və iş günlərini tapın, tarixə gün/ay/il əlavə edin.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "İş günləri hansı günləri əhatə edir?", "acceptedAnswer": {"@type": "Answer", "text": "Bazar ertəsindən cümə gününə qədər olan günlər (başlanğıc gün daxil, son gün daxil deyil). Rəsmi bayramlar nəzərə alınmır."}}, {"@type": "Question", "name": "Tarixə ay əlavə edəndə nə baş verir?", "acceptedAnswer": {"@type": "Answer", "text": "31 yanvara 1 ay əlavə etsəniz, fevralın sonuncu günü alınır, çünki fevralda 31-ci gün yoxdur."}}, {"@type": "Question", "name": "Çox əvvəlki tarixlərlə işləyirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Bəli, qəbul edilən tarix aralığı geniş, kəbisə illər isə düzgün nəzərə alınır."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
 <div class="progress"></div>
+<div class="topbar"><div class="wrap">
+<span class="by">Ümid Şıxıyev tərəfindən yaradılıb</span>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Tünd və açıq tema">🌙 Tünd tema</button>
+</div></div>
 <header class="site-header">
 <div class="wrap head-row">
 <a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>

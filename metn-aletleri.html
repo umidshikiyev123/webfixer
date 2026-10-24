@@ -27,12 +27,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
+<script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Mətn Alətləri", "url": "https://webfixer.space/metn-aletleri.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Söz/hərf sayğacı, BÖYÜK/kiçik hərf, mətn təmizləmə.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Söz sayı necə hesablanır?", "acceptedAnswer": {"@type": "Answer", "text": "Boşluqlarla ayrılmış hər hissə bir söz sayılır. Bu, əksər mətn redaktorlarının üsuludur, ona görə nəticələr yaxın olur."}}, {"@type": "Question", "name": "Azərbaycan hərfləri (ə, ğ, ı, ö, ü, ç, ş) düzgün işlənirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Bəli. Alət Unicode ilə işləyir. Böyük və kiçik hərf çevirməsində i/İ və ı/I Azərbaycan qaydasına uyğun yazılır."}}, {"@type": "Question", "name": "Yazdığım mətn harasa göndərilirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Xeyr. Mətn yalnız brauzerinizdə işlənir və heç bir yerə yüklənmir."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
 <div class="progress"></div>
+<div class="topbar"><div class="wrap">
+<span class="by">Ümid Şıxıyev tərəfindən yaradılıb</span>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Tünd və açıq tema">🌙 Tünd tema</button>
+</div></div>
 <header class="site-header">
 <div class="wrap head-row">
 <a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>

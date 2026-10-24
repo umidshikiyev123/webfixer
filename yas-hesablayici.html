@@ -27,12 +27,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
+<script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Yaş Hesablayıcı", "url": "https://webfixer.space/yas-hesablayici.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Doğum tarixindən dəqiq yaşı (il, ay, gün), yaşadığınız günləri və növbəti ad gününü hesablayın.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Yaş necə hesablanır?", "acceptedAnswer": {"@type": "Answer", "text": "Doğum tarixi ilə seçilmiş tarix arasındakı tam illər, sonra qalan tam aylar və günlər sayılır."}}, {"@type": "Question", "name": "Doğum tarixim harasa göndərilirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Xeyr, hesablama brauzerinizdə aparılır və məlumat saxlanılmır."}}, {"@type": "Question", "name": "Saat qurşağı nəticəyə təsir edirmi?", "acceptedAnswer": {"@type": "Answer", "text": "Hesablama yalnız təqvim günləri ilə aparılır, saat qurşağı təsir etmir."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
 <div class="progress"></div>
+<div class="topbar"><div class="wrap">
+<span class="by">Ümid Şıxıyev tərəfindən yaradılıb</span>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Tünd və açıq tema">🌙 Tünd tema</button>
+</div></div>
 <header class="site-header">
 <div class="wrap head-row">
 <a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>

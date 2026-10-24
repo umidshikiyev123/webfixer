@@ -27,12 +27,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
+<script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Parol / Açar Generatoru", "url": "https://webfixer.space/parol-generatoru.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Güclü parol, hex açar və API token yaradın.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Yaranan parollar harada saxlanılır?", "acceptedAnswer": {"@type": "Answer", "text": "Heç harada. Parol yalnız ekranınızda yaranır, biz onu görmürük və saxlamırıq. Səhifəni bağladıqda yox olur."}}, {"@type": "Question", "name": "Ən təhlükəsiz parol uzunluğu nə qədərdir?", "acceptedAnswer": {"@type": "Answer", "text": "Gündəlik hesablar üçün 14-16 simvol, vacib hesablar (e-poçt, bank) üçün 20 və daha çox simvol məsləhətdir."}}, {"@type": "Question", "name": "Hex açar və token nə üçündür?", "acceptedAnswer": {"@type": "Answer", "text": "Proqramçılar bunları API açarı, sessiya tokeni və ya şifrələmə üçün gizli dəyər kimi istifadə edir."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
 <div class="progress"></div>
+<div class="topbar"><div class="wrap">
+<span class="by">Ümid Şıxıyev tərəfindən yaradılıb</span>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Tünd və açıq tema">🌙 Tünd tema</button>
+</div></div>
 <header class="site-header">
 <div class="wrap head-row">
 <a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>

@@ -27,12 +27,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <script>document.documentElement.className+=' js'</script>
+<script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Araşdırma Köməkçisi", "url": "https://webfixer.space/arasdirma.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "az", "description": "Mövzu yazın, Wikipedia izahını və elmi məqalələri mənbə linkləri ilə birlikdə tapın.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AZN"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Bu alət özü məqalə yazırmı?", "acceptedAnswer": {"@type": "Answer", "text": "Xeyr. Alət yalnız açıq məlumat bazalarından mövcud mənbələri tapıb göstərir. Heç bir mətn uydurulmur və hər nəticənin orijinal linki var."}}, {"@type": "Question", "name": "Tapılan məqalələri oxumaq pulsuzdur?", "acceptedAnswer": {"@type": "Answer", "text": "Bəzi məqalələr açıq əlçatandır, bəziləri isə nəşriyyatın abunəliyini tələb edir. Bu, Crossref-dən deyil, jurnaldan asılıdır. DOI linki sizi birbaşa nəşriyyat səhifəsinə aparır."}}, {"@type": "Question", "name": "Wikipedia-nı akademik işdə mənbə göstərmək olarmı?", "acceptedAnswer": {"@type": "Answer", "text": "Adətən yox. Wikipedia mövzu ilə tanış olmaq üçün yaxşı başlanğıcdır, lakin ciddi işlərdə onun altındakı ilkin mənbələrə və elmi məqalələrə istinad edilməlidir."}}, {"@type": "Question", "name": "Axtarış sözüm harada saxlanılır?", "acceptedAnswer": {"@type": "Answer", "text": "Saytımız axtarışları saxlamır. Sorğu nəticələri gətirmək üçün birbaşa Wikipedia və Crossref xidmətlərinə göndərilir. Ətraflı məlumat məxfilik siyasətindədir."}}]}</script>
 </head>
 <body class="ads-off">
 <a class="skip" href="#main">Məzmuna keç</a>
 <div class="progress"></div>
+<div class="topbar"><div class="wrap">
+<span class="by">Ümid Şıxıyev tərəfindən yaradılıb</span>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Tünd və açıq tema">🌙 Tünd tema</button>
+</div></div>
 <header class="site-header">
 <div class="wrap head-row">
 <a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>

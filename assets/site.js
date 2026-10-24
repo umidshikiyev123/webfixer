@@ -32,6 +32,17 @@
   onScroll();
   if(top) top.addEventListener('click', function(){ w.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'}); });
 
+  /* Tünd / açıq tema */
+  var tb = d.getElementById('themeBtn'), root = d.documentElement;
+  function paintBtn(){ if(tb) tb.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️ Açıq tema' : '🌙 Tünd tema'; }
+  paintBtn();
+  if(tb) tb.addEventListener('click', function(){
+    var dark = root.getAttribute('data-theme') !== 'dark';
+    if(dark) root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    try{ localStorage.setItem('wf-theme', dark ? 'dark' : 'light'); }catch(e){}
+    paintBtn();
+  });
+
   /* Mobil menyu */
   var tg = d.querySelector('.nav-toggle'), nav = d.querySelector('.nav');
   if(tg && nav){
