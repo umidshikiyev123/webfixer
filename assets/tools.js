@@ -1,4 +1,4 @@
-/* MikroTools — 8 alətin kodu. Hər alət səhifəsi öz init funksiyasını çağırır. */
+/* WebFixer — 8 alətin kodu. Hər alət səhifəsi öz init funksiyasını çağırır. */
 /* ---------- 1. ŞƏKİL RESIZER / KONVERTOR ---------- */
 function initImage(root){
   root.innerHTML = `

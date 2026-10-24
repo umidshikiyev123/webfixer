@@ -1,5 +1,5 @@
 /* =====================================================================
-   MikroTools — ağ və tünd göy, klassik dizayn
+   WebFixer — ağ və tünd göy, klassik dizayn
    Bölmələr: 1) Dəyişənlər 2) Baza 3) Header 4) Hero 5) Kartlar
              6) Alət səhifəsi 7) Form elementləri 8) Alət komponentləri
              9) Reklam yerləri 10) Footer 11) Animasiyalar
@@ -322,3 +322,10 @@ input[type=date]:focus{border-color:var(--navy-2);box-shadow:0 0 0 4px rgba(37,9
 .cc-row code{flex:1;font-family:var(--mono);word-break:break-all}
 .cc-con{flex:1;min-width:200px;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line)}
 .cc-con span{font-size:.88rem;opacity:.95}
+
+/* Bələdçi və sual-cavab bölmələri */
+.about h2,.guide-faq h2{font-size:1.5rem;margin:6px 0 12px;color:var(--navy)}
+.guide-faq{margin-top:34px}
+.guide-faq .faq{max-width:none;margin:0}
+.about.guide ul{padding-left:1.2rem;display:grid;gap:8px}
+.prose h2{margin-top:28px}

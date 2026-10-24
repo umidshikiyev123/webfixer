@@ -1,5 +1,5 @@
 /* =====================================================================
-   MikroTools — ümumi sayt skripti
+   WebFixer — ümumi sayt skripti
    Header kölgəsi, oxuma xətti, aşağı sürüşdürdükcə yüklənmə animasiyası,
    rəqəm sayğacı, mobil menyu, "yuxarı" düyməsi, ana səhifə filtri.
    ===================================================================== */

@@ -1,4 +1,4 @@
-# MikroTools (webfixer.space)
+# WebFixer (webfixer.space)
 
 Pulsuz onlayn alətlər saytı: şəkil ölçüsü, mətn, parol, QR kod, rəng palitrası, AI prompt, konvertor, taymer.
 Statik sayt (GitHub Pages), serversiz.

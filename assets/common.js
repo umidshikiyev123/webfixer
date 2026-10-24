@@ -1,4 +1,4 @@
-/* MikroTools — ümumi köməkçi funksiyalar (bildiriş, kopyalama, endirmə) */
+/* WebFixer — ümumi köməkçi funksiyalar (bildiriş, kopyalama, endirmə) */
 /* ---------- A) KÖMƏKÇİ FUNKSİYALAR ---------- */
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];

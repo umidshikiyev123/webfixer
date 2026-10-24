@@ -1,5 +1,5 @@
 /* =====================================================================
-   MikroTools — əlavə 11 sadə alət
+   WebFixer — əlavə 11 sadə alət
    Faiz, Yaş, Tarix, BMI, ƏDV/Endirim, Təsadüfi seçim, Base64/URL,
    JSON, URL slug, Rəng konvertoru, Ədədi sözlə yaz.
    Hamısı brauzerdə işləyir. common.js tələb olunur ($, $$, toast, copyText...).
