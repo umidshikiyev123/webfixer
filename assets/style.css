@@ -303,3 +303,22 @@ a.btn{display:inline-block;text-decoration:none}
 .r-tools{margin:0 0 14px}
 .card .new{position:absolute;right:16px;top:16px;font-size:.68rem;font-weight:700;letter-spacing:.1em;color:#fff;background:var(--blue);border-radius:999px;padding:3px 10px}
 .btn[disabled]{opacity:.65;cursor:progress;transform:none}
+
+/* ===== Əlavə alətlər (faiz, tarix, rəng konvertoru və s.) ===== */
+input[type=date]{width:100%;background:#fff;border:1px solid #c9d5ea;border-radius:10px;padding:10px 13px;outline:none;transition:border-color .2s,box-shadow .2s}
+input[type=date]:focus{border-color:var(--navy-2);box-shadow:0 0 0 4px rgba(37,99,235,.13)}
+.mini{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.mini h3{font-size:1.02rem;margin-bottom:4px;color:var(--navy)}
+.mini p{color:var(--muted);margin:6px 0 0}
+.mini p b{color:var(--ink)}
+.res-big{font-family:var(--serif);font-size:clamp(1.3rem,3.4vw,1.8rem);font-weight:700;color:var(--navy);margin-top:10px;word-break:break-word;cursor:default}
+.mini .res-big{cursor:copy}
+.status.ok{color:var(--lime);font-weight:600}
+.status.bad{color:var(--danger);font-weight:600}
+.cc-prev{height:110px;border-radius:12px;border:1px solid var(--line);margin-top:16px;box-shadow:var(--shadow-sm);transition:background .3s}
+.cc-rows{display:grid;gap:8px;margin-top:14px}
+.cc-row{display:flex;align-items:center;gap:12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.cc-row span{width:42px;font-weight:700;font-size:.8rem;color:var(--navy);letter-spacing:.06em}
+.cc-row code{flex:1;font-family:var(--mono);word-break:break-all}
+.cc-con{flex:1;min-width:200px;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line)}
+.cc-con span{font-size:.88rem;opacity:.95}
