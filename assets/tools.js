@@ -382,3 +382,190 @@ function initTimer(root){
   $('#ctR', root).onclick = () => { ct = 0; ctShow(); };
 }
 
+
+/* ---------- 9. ARAŞDIRMA KÖMƏKÇİSİ (Wikipedia + Crossref) ---------- */
+function initResearch(root){
+  const MAIL = 'umidshk@gmail.com';               // Crossref "polite pool" üçün əlaqə e-poçtu
+  const LANGS = {az:'Azərbaycan dili', en:'English', tr:'Türkçe', ru:'Русский'};
+  const HIST_KEY = 'mt_research_hist';
+
+  root.innerHTML = `
+    <label for="rQ">Mövzu və ya sual</label>
+    <input type="text" id="rQ" placeholder="məs: iqlim dəyişikliyi və kənd təsərrüfatı" autocomplete="off" maxlength="200">
+    <div class="row">
+      <div><label for="rLang">Wikipedia dili</label>
+        <select id="rLang">${Object.entries(LANGS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select></div>
+      <div><label for="rSort">Məqalələrin sıralanması</label>
+        <select id="rSort"><option value="rel">Uyğunluğa görə</option><option value="cited">Ən çox istinad edilən</option><option value="new">Ən yeni</option></select></div>
+      <div><label for="rYear">İldən etibarən</label>
+        <input type="number" id="rYear" min="1900" max="2100" placeholder="məs: 2015"></div>
+    </div>
+    <label class="check"><input type="checkbox" id="rJournal" checked> Yalnız jurnal məqalələri</label>
+    <div class="btns"><button class="btn" id="rGo">🔬 Axtar</button><button class="btn ghost" id="rClr">Təmizlə</button></div>
+    <div class="r-hist" id="rHist"></div>
+    <div id="rOut" aria-live="polite"></div>`;
+
+  const qEl = $('#rQ', root), langEl = $('#rLang', root), sortEl = $('#rSort', root), yearEl = $('#rYear', root);
+  const jEl = $('#rJournal', root), goBtn = $('#rGo', root), out = $('#rOut', root), histEl = $('#rHist', root);
+  let reqId = 0, papersNow = [];
+
+  /* --- kiçik DOM köməkçisi: mətn həmişə textContent kimi yazılır (XSS-dən qorunur) --- */
+  const h = (tag, attrs = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for(const [k, v] of Object.entries(attrs)){
+      if(k === 'class') el.className = v; else if(k === 'text') el.textContent = v; else el.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => { if(c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return el;
+  };
+  const plain = s => new DOMParser().parseFromString(String(s || ''), 'text/html').body.textContent.trim(); // <i>, &amp; kimi şeyləri təmizləyir
+
+  async function getJSON(url){
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
+    try{
+      const r = await fetch(url, {signal: ctl.signal});
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } finally { clearTimeout(t); }
+  }
+
+  /* --- Wikipedia: ilk 3 nəticənin giriş mətni --- */
+  async function wiki(query, lang){
+    if(!LANGS[lang]) lang = 'en';
+    const p = new URLSearchParams({action:'query', generator:'search', gsrsearch:query, gsrlimit:'3', prop:'extracts|info',
+      exintro:'1', explaintext:'1', exsentences:'4', exlimit:'3', inprop:'url', format:'json', formatversion:'2', origin:'*'});
+    const d = await getJSON(`https://${lang}.wikipedia.org/w/api.php?` + p);
+    const pages = (d.query && d.query.pages) || [];
+    return pages.slice().sort((a, b) => (a.index || 0) - (b.index || 0))
+      .filter(x => x.extract && /^https:\/\/[a-z-]+\.wikipedia\.org\//.test(x.fullurl || ''))
+      .map(x => ({title: x.title, extract: x.extract.trim(), url: x.fullurl}));
+  }
+
+  /* --- Crossref: elmi məqalələr --- */
+  async function crossref(query, sort, year, journalOnly){
+    const p = new URLSearchParams({query, rows:'10', mailto:MAIL,
+      select:'DOI,title,author,issued,container-title,is-referenced-by-count,type'});
+    if(sort === 'cited'){ p.set('sort', 'is-referenced-by-count'); p.set('order', 'desc'); }
+    if(sort === 'new'){ p.set('sort', 'published'); p.set('order', 'desc'); }
+    const f = [];
+    if(journalOnly) f.push('type:journal-article');
+    if(year) f.push('from-pub-date:' + year);
+    if(f.length) p.set('filter', f.join(','));
+    const d = await getJSON('https://api.crossref.org/works?' + p);
+    const items = (d.message && d.message.items) || [];
+    return items.map(it => {
+      const title = plain(it.title && it.title[0]);
+      if(!title || !it.DOI) return null;
+      const dp = it.issued && it.issued['date-parts'] && it.issued['date-parts'][0];
+      return {title, doi: String(it.DOI), year: dp && dp[0] ? dp[0] : null,
+        venue: plain(it['container-title'] && it['container-title'][0]),
+        cites: it['is-referenced-by-count'] || 0,
+        authors: (it.author || []).map(a => ({family: plain(a.family), given: plain(a.given), name: plain(a.name)}))};
+    }).filter(Boolean);
+  }
+
+  /* --- sitat (APA-ə yaxın) --- */
+  const initials = g => (g || '').split(/[\s.-]+/).filter(Boolean).map(w => w[0].toUpperCase() + '.').join(' ');
+  function fmtAuthors(a){
+    const names = a.map(x => x.family ? x.family + (x.given ? ', ' + initials(x.given) : '') : x.name).filter(Boolean);
+    if(!names.length) return '';
+    if(names.length > 6) return names.slice(0, 6).join(', ') + ', et al.';
+    if(names.length === 1) return names[0];
+    return names.slice(0, -1).join(', ') + ', & ' + names[names.length - 1];
+  }
+  function cite(p){
+    const au = fmtAuthors(p.authors);
+    return [(au ? au + ' ' : '') + '(' + (p.year || 't.y.') + ').', p.title.replace(/[.?!]+$/, '') + '.',
+      p.venue ? p.venue + '.' : '', 'https://doi.org/' + p.doi].filter(Boolean).join(' ');
+  }
+
+  /* --- son axtarışlar (yalnız bu brauzerdə) --- */
+  function loadHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)) || []; }catch(e){ return []; } }
+  function saveHist(v){
+    try{ const a = [v, ...loadHist().filter(x => x !== v)].slice(0, 6); localStorage.setItem(HIST_KEY, JSON.stringify(a)); }catch(e){}
+    drawHist();
+  }
+  function drawHist(){
+    const a = loadHist(); histEl.replaceChildren();
+    if(!a.length) return;
+    histEl.append(h('span', {class:'status', text:'Son axtarışlar:'}));
+    a.forEach(v => histEl.append(h('button', {class:'chip', type:'button', text:v})));
+    $$('.chip', histEl).forEach(b => b.onclick = () => { qEl.value = b.textContent; run(); });
+  }
+
+  /* --- nəticələrin çəkilməsi --- */
+  const msg = (cls, text) => h('p', {class:'r-msg ' + cls, text});
+  function section(title, ...kids){ return h('section', {class:'r-sec'}, h('h3', {text:title}), ...kids); }
+
+  function render(query, w, c){
+    out.replaceChildren();
+    out.append(h('p', {class:'status'}, 'Mənbələr: ', h('a', {href:'https://www.wikipedia.org', target:'_blank', rel:'noopener noreferrer', text:'Wikipedia'}),
+      ' (CC BY-SA 4.0) və ', h('a', {href:'https://www.crossref.org', target:'_blank', rel:'noopener noreferrer', text:'Crossref'}),
+      '. Məlumatı mənbədə yoxlayın.'));
+
+    // 1) Wikipedia
+    const wk = [];
+    if(w.status === 'rejected') wk.push(msg('err', 'Wikipedia-ya qoşulmaq alınmadı. İnternetinizi yoxlayıb bir azdan yenidən cəhd edin.'));
+    else if(!w.value.length) wk.push(msg('', 'Wikipedia-da bu dildə uyğun məqalə tapılmadı. Başqa dil və ya fərqli açar sözlər yoxlayın.'));
+    else w.value.forEach(x => wk.push(h('article', {class:'r-card'}, h('h4', {text:x.title}),
+      h('p', {text:x.extract}), h('a', {href:x.url, target:'_blank', rel:'noopener noreferrer', text:'Wikipedia-da oxu →'}))));
+    out.append(section('📖 Wikipedia', ...wk));
+
+    // 2) Elmi məqalələr
+    const ck = [];
+    papersNow = [];
+    if(c.status === 'rejected') ck.push(msg('err', 'Crossref-ə qoşulmaq alınmadı. Bir azdan yenidən cəhd edin.'));
+    else if(!c.value.length) ck.push(msg('', 'Elmi məqalə tapılmadı. Açar sözləri ingilis dilində yazın, ili və ya "Yalnız jurnal məqalələri" seçimini dəyişin.'));
+    else {
+      papersNow = c.value;
+      ck.push(h('div', {class:'btns r-tools'},
+        h('button', {class:'btn sm', type:'button', id:'rCopyAll', text:'📋 Hamısını sitat kimi kopyala'}),
+        h('button', {class:'btn sm alt', type:'button', id:'rDl', text:'⬇ .txt endir'})));
+      c.value.forEach((p, i) => {
+        const au = p.authors.map(a => a.family ? (a.given ? a.given + ' ' : '') + a.family : a.name).filter(Boolean);
+        const authors = au.length > 3 ? au.slice(0, 3).join(', ') + ' və b.' : au.join(', ');
+        ck.push(h('article', {class:'r-card paper'},
+          h('h4', {}, h('a', {href:'https://doi.org/' + encodeURI(p.doi), target:'_blank', rel:'noopener noreferrer', text:p.title})),
+          h('p', {class:'r-meta', text:[authors, p.year, p.venue].filter(Boolean).join(' · ')}),
+          h('div', {class:'r-row'},
+            h('span', {class:'r-badge', text:p.cites + ' istinad'}),
+            h('button', {class:'btn sm ghost', type:'button', 'data-cite':i, text:'Sitat'}),
+            h('button', {class:'btn sm ghost', type:'button', 'data-doi':i, text:'DOI'}))));
+      });
+    }
+    out.append(section('📚 Elmi məqalələr', ...ck));
+
+    // 3) Başqa bazalar
+    const e = encodeURIComponent(query), ext = (href, text) => h('a', {class:'btn sm ghost', href, target:'_blank', rel:'noopener noreferrer', text});
+    out.append(section('🔗 Başqa mənbələrdə axtar', h('div', {class:'btns'},
+      ext('https://scholar.google.com/scholar?q=' + e, 'Google Scholar'),
+      ext('https://www.semanticscholar.org/search?q=' + e, 'Semantic Scholar'),
+      ext('https://core.ac.uk/search?q=' + e, 'CORE (açıq mətnlər)'))));
+
+    $$('[data-cite]', out).forEach(b => b.onclick = () => copyText(cite(papersNow[+b.dataset.cite])));
+    $$('[data-doi]', out).forEach(b => b.onclick = () => copyText('https://doi.org/' + papersNow[+b.dataset.doi].doi));
+    const all = () => papersNow.map((p, i) => (i + 1) + '. ' + cite(p)).join('\n\n');
+    const ca = $('#rCopyAll', out), dl = $('#rDl', out);
+    if(ca) ca.onclick = () => copyText(all());
+    if(dl) dl.onclick = () => downloadText(all(), 'menbeler.txt');
+  }
+
+  async function run(){
+    const query = qEl.value.trim();
+    if(query.length < 2){ toast('Axtarış sözü yazın'); qEl.focus(); return; }
+    const y = parseInt(yearEl.value, 10), year = y >= 1900 && y <= 2100 ? y : '';
+    const id = ++reqId;
+    saveHist(query);
+    goBtn.disabled = true; goBtn.textContent = '⏳ Axtarılır…';
+    out.replaceChildren(h('p', {class:'status', text:'🔎 Mənbələr yoxlanılır…'}));
+    const [w, c] = await Promise.allSettled([wiki(query, langEl.value), crossref(query, sortEl.value, year, jEl.checked)]);
+    if(id !== reqId) return;                       // köhnə sorğunun cavabı ignor edilir
+    goBtn.disabled = false; goBtn.textContent = '🔬 Axtar';
+    render(query, w, c);
+  }
+
+  goBtn.onclick = run;
+  qEl.addEventListener('keydown', e => { if(e.key === 'Enter') run(); });
+  $('#rClr', root).onclick = () => { reqId++; qEl.value = ''; yearEl.value = ''; out.replaceChildren(); papersNow = []; goBtn.disabled = false; goBtn.textContent = '🔬 Axtar'; qEl.focus(); };
+  drawHist();
+}
