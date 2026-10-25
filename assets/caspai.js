@@ -22,15 +22,15 @@ function initCaspAI(root) {
   root.innerHTML =
     '<div class="cai-app">' +
       '<div class="cai-bar"><div class="cai-bar-in">' +
-        '<a class="cai-back" href="/" aria-label="Ana səhifəyə qayıt">← Geri</a>' +
-        '<div class="cai-title"><i></i>CaspAI</div>' +
+        '<a class="cai-back" href="/" aria-label="Ana səhifəyə qayıt">← Ana səhifə</a>' +
+        '<div class="cai-logo"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Casp<b>AI</b></span></div>' +
         '<div class="cai-left" id="caiLeft" aria-live="polite"></div>' +
       '</div></div>' +
       '<div class="cai-log" id="caiLog" role="log" aria-live="polite"><div class="cai-log-in" id="caiLogIn"></div></div>' +
       '<div class="cai-foot"><div class="cai-foot-in">' +
         '<form class="cai-form" id="caiForm">' +
           '<textarea id="caiInput" rows="1" maxlength="' + MAX_CHARS + '" placeholder="Mesaj yaz…" aria-label="Mesaj"></textarea>' +
-          '<button class="cai-send" id="caiSend" type="submit" aria-label="Göndər">➤</button>' +
+          '<button class="cai-send" id="caiSend" type="submit" aria-label="Göndər">→</button>' +
         '</form>' +
         '<p class="cai-note">Cavablar yanlış ola bilər. Parol, kart nömrəsi və şəxsi məlumat yazmayın. ' +
         'Mesajlar cavab üçün Google-un AI xidmətinə göndərilir. <a href="/privacy.html">Məxfilik</a></p>' +
