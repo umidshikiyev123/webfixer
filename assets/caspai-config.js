@@ -7,7 +7,8 @@
      2) alətlər siyahısının əvvəlində CaspAI kartı
    ===================================================================== */
 window.CASPAI = {
-  enabled: true,
+  // AdSense baxışı bitənə qədər false. Təsdiqdən sonra true et və commit et.
+  enabled: false,
   api: 'https://caspai.wf-caspai.workers.dev/chat',
   // Düymənin altındakı qısa təsvir. Yoxlana bilməyən iddialar (məs. "ilk", "ən yaxşı") yazma.
   tagline: 'Azərbaycan dilində AI köməkçi · gündə 5 pulsuz mesaj'

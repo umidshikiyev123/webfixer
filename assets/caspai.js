@@ -70,7 +70,13 @@ function initCaspAI(root) {
 
   // Qalan mesaj sayı (limit istifadə etmir)
   fetch(statusUrl).then(function (r) { return r.json(); })
-    .then(function (d) { setLeft(d.remaining); }).catch(function () {});
+    .then(function (d) {
+      setLeft(d.remaining);
+      if (d.enabled === false) {
+        bubble('assistant', 'CaspAI hazırda təkmilləşdirilir. Tezliklə yenidən aktiv olacaq. Bu vaxt WebFixer-in digər alətlərindən istifadə edə bilərsiniz.');
+        send.disabled = true; input.disabled = true; sugg.hidden = true;
+      }
+    }).catch(function () {});
 
   function grow() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 140) + 'px'; }
   input.addEventListener('input', grow);
