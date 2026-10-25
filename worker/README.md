@@ -15,12 +15,22 @@ Açar heç vaxt saytın kodunda (GitHub-da) olmur.
    ```
 3. `deploy` sonunda ünvan çıxacaq: `https://caspai.XXXX.workers.dev`
 
-## 2. Xərc qorumaları (mütləq et)
+## 2. Limitlər və Google kvotası (mütləq et)
 
-- `wrangler.toml`-da `DAILY_GLOBAL = "1500"`: bütün sayt üçün günlük mesaj tavanı. Bu dolanda AI "sabah gəl" deyir. Büdcəyə görə dəyiş.
-- `DAILY_PER_IP = "5"`: hər istifadəçiyə günlük pulsuz mesaj.
+Google AI Studio pulsuz səviyyəsində `gemini-3.1-flash-lite` üçün tavan: **15 sorğu/dəq, 250K token/dəq, 500 sorğu/gün**. Bu limit bütün istifadəçilərə birlikdə çatır.
+
+| Dəyişən (`wrangler.toml`) | Dəyər | Məqsəd |
+|---|---|---|
+| `DAILY_GLOBAL` | 450 | Bütün sayt üçün günlük tavan (500-ə 50 ehtiyat) |
+| `RPM_MAX` | 12 | Dəqiqəlik tavan (15-ə 3 ehtiyat) |
+| `DAILY_PER_IP` | 5 | Hər istifadəçiyə günlük pulsuz mesaj |
+| `AI_ENABLED` | "true" | Kill switch. "false" + `npx wrangler deploy` = AI dərhal söndürülür |
+
+- Gün sərhədi Pasifik vaxtı ilə hesablanır, çünki Google kvotanı oradan sıfırlayır (Bakı vaxtı ilə 11:00, yay vaxtı bitəndən sonra 12:00). Mesajlarda saat avtomatik göstərilir.
+- Google 429 qaytarsa, istifadəçinin mesaj hüququ geri qaytarılır və səliqəli mesaj göstərilir.
 - Google AI Studio / Google Cloud-da büdcə xəbərdarlığı (budget alert) qur.
 - Açar sızarsa, AI Studio-da həmin açarı silib yenisini yarat, sonra `wrangler secret put GEMINI_API_KEY` ilə yenilə.
+- Pulsuz səviyyədə sorğular Google tərəfindən məhsulu yaxşılaşdırmaq üçün istifadə oluna bilər. Daha çox trafik gələrsə, AI Studio-da billing aç (limitlər xeyli artır).
 
 ## 3. Saytda AI-ı aç (bir kliklik iş)
 

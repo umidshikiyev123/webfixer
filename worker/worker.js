@@ -41,9 +41,27 @@ function json(data, status, origin) {
   });
 }
 
-// Bakı vaxtı ilə günün açarı (YYYY-MM-DD) — limit hər gecə yarısı sıfırlanır
+// Google Gemini gündəlik kvotanı Pasifik vaxtı ilə gecə yarısı sıfırlayır.
+// Bizim sayğac da eyni pəncərəyə uyğun olsun deyə gün açarı Pasifik vaxtı ilə hesablanır
+// (yoxsa Bakı gecə yarısı sıfırlanan sayğac Google-un 500/gün tavanını aşa bilər).
+const GOOGLE_TZ = 'America/Los_Angeles';
+
+function laDay(ms) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: GOOGLE_TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
+}
+
 function dayKey() {
-  return new Date(Date.now() + 4 * 3600 * 1000).toISOString().slice(0, 10);
+  return laDay(Date.now());
+}
+
+// Kvotanın yenilənmə saatı, Bakı vaxtı ilə (məs. "11:00"; yay vaxtı bitəndən sonra "12:00")
+function resetTimeBaku() {
+  const now = Date.now();
+  const d0 = laDay(now);
+  let t = now;
+  for (let i = 0; i < 100 && laDay(t) === d0; i++) t += 15 * 60 * 1000;
+  t = Math.floor(t / 3600000) * 3600000; // Pasifik ofsetləri tam saatdır
+  return new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Baku', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(t));
 }
 
 async function hashIp(ip, salt) {
@@ -88,19 +106,26 @@ export default {
     if (!allowed) return json({ error: 'İcazə yoxdur.' }, 403);
 
     const perIp = num(env.DAILY_PER_IP, 5);
-    const globalMax = num(env.DAILY_GLOBAL, 1500);
+    // Google pulsuz səviyyə (Gemini 3.1 Flash Lite): 500 sorğu/gün, 15 sorğu/dəq. Ehtiyat saxlayırıq.
+    const globalMax = num(env.DAILY_GLOBAL, 450);
+    const rpmMax = num(env.RPM_MAX, 12);
+    const enabled = String(env.AI_ENABLED == null ? 'true' : env.AI_ENABLED).toLowerCase() !== 'false';
     const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
     const ipHash = await hashIp(ip, env.IP_SALT || 'caspai');
     const day = dayKey();
+    const resetAt = resetTimeBaku();
 
     // Qalan mesaj sayını göstərmək üçün (limit istifadə etmir)
     if (url.pathname === '/status' && req.method === 'GET') {
-      const s = await limiter(env, { action: 'status', ipHash, day, perIp, globalMax });
-      return json({ remaining: s.remaining, limit: perIp }, 200, origin);
+      if (!enabled) return json({ enabled: false, remaining: 0, limit: perIp }, 200, origin);
+      const s = await limiter(env, { action: 'status', ipHash, day, perIp, globalMax, rpmMax });
+      return json({ enabled: true, remaining: s.remaining, limit: perIp, resetAt }, 200, origin);
     }
 
     if (url.pathname !== '/chat' || req.method !== 'POST') return json({ error: 'Tapılmadı.' }, 404, origin);
-    if (!env.GEMINI_API_KEY) return json({ error: 'Server hələ qurulmayıb.' }, 500, origin);
+    // Kill switch: wrangler.toml-da AI_ENABLED = "false" yazıb deploy etsən, AI dərhal söndürülür
+    if (!enabled) return json({ error: 'CaspAI hazırda təkmilləşdirilir. Tezliklə yenidən aktiv olacaq.', reason: 'disabled', remaining: 0 }, 503, origin);
+    if (!env.GEMINI_API_KEY) return json({ error: 'Xidmət hələ qurulmayıb.' }, 500, origin);
 
     let payload;
     try { payload = await req.json(); } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
@@ -108,12 +133,17 @@ export default {
     if (!contents) return json({ error: 'Mesaj boşdur və ya yanlışdır.' }, 400, origin);
 
     // Limiti Gemini-yə getməzdən ƏVVƏL sayırıq ki, sorğu spamı pul xərcləməsin
-    const gate = await limiter(env, { action: 'take', ipHash, day, perIp, globalMax });
+    const gate = await limiter(env, { action: 'take', ipHash, day, perIp, globalMax, rpmMax });
     if (!gate.ok) {
-      const msg = gate.reason === 'global'
-        ? 'Bu gün CaspAI-nin ümumi limiti doldu. Sabah yenidən gəl!'
-        : `Bu gün üçün ${perIp} pulsuz mesajın bitdi. Sabah yenidən gəl!`;
-      return json({ error: msg, remaining: 0, reason: gate.reason }, 429, origin);
+      const msgs = {
+        global: `Bu günlük pulsuz AI kvotası başa çatdı. Kvota Bakı vaxtı ilə saat ${resetAt}-da yenilənir. Bu vaxt WebFixer-in digər alətlərindən istifadə edə bilərsiniz.`,
+        ip: `Bu gün üçün ${perIp} pulsuz mesajınızı istifadə etmisiniz. CaspAI ilkin mərhələdə hər istifadəçiyə gündə ${perIp} mesaj təklif edir ki, xidmət hamı üçün sabit qalsın. Limit Bakı vaxtı ilə saat ${resetAt}-da yenilənir.`,
+        rpm: 'Hazırda sorğuların sayı çoxdur. Zəhmət olmasa 1 dəqiqə sonra yenidən cəhd edin.',
+      };
+      const status = 429;
+      const res = json({ error: msgs[gate.reason] || msgs.ip, remaining: gate.remaining || 0, reason: gate.reason, resetAt }, status, origin);
+      if (gate.reason === 'rpm') res.headers.set('Retry-After', '30');
+      return res;
     }
 
     const model = env.MODEL || 'gemini-3.1-flash-lite';
@@ -130,6 +160,14 @@ export default {
         }),
         signal: ctl.signal,
       });
+      if (r.status === 429) {
+        // Google limiti dolub: istifadəçinin hüququnu geri qaytar, səliqəli mesaj göstər
+        await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax, rpmMax });
+        console.error('gemini 429 (Google kvotası)');
+        const res = json({ error: 'Hazırda sorğuların sayı çoxdur. Zəhmət olmasa 1 dəqiqə sonra yenidən cəhd edin.', reason: 'rpm', remaining: gate.remaining + 1, resetAt }, 429, origin);
+        res.headers.set('Retry-After', '30');
+        return res;
+      }
       if (!r.ok) throw new Error('gemini ' + r.status + ' ' + (await r.text()).slice(0, 300));
       const data = await r.json();
       const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
@@ -154,7 +192,7 @@ export class Limiter {
   constructor(state) { this.state = state; }
 
   async fetch(req) {
-    const { action, ipHash, day, perIp, globalMax } = await req.json();
+    const { action, ipHash, day, perIp, globalMax, rpmMax } = await req.json();
     const st = this.state.storage;
 
     // Yeni gün başlayıbsa köhnə sayğacları sil (yaddaş böyüməsin)
@@ -165,15 +203,23 @@ export class Limiter {
     const gN = (await st.get('g')) || 0;
     const reply = (o) => new Response(JSON.stringify(o), { headers: { 'Content-Type': 'application/json' } });
 
+    // Dəqiqəlik pəncərə (Google: 15 sorğu/dəq; biz 12-də dayanırıq)
+    const minute = Math.floor(Date.now() / 60000);
+    const mKey = (await st.get('m')) === minute ? 'mn' : null;
+    const mN = mKey ? (await st.get('mn')) || 0 : 0;
+
     if (action === 'status') return reply({ remaining: gN >= globalMax ? 0 : Math.max(0, perIp - ipN) });
     if (action === 'refund') {
-      await st.put({ [ipKey]: Math.max(0, ipN - 1), g: Math.max(0, gN - 1) });
+      const o = { [ipKey]: Math.max(0, ipN - 1), g: Math.max(0, gN - 1) };
+      if (mKey) o.mn = Math.max(0, mN - 1);
+      await st.put(o);
       return reply({ ok: true });
     }
     // take
     if (gN >= globalMax) return reply({ ok: false, reason: 'global', remaining: 0 });
     if (ipN >= perIp) return reply({ ok: false, reason: 'ip', remaining: 0 });
-    await st.put({ [ipKey]: ipN + 1, g: gN + 1 });
+    if (mN >= (rpmMax || 12)) return reply({ ok: false, reason: 'rpm', remaining: Math.max(0, perIp - ipN) });
+    await st.put({ [ipKey]: ipN + 1, g: gN + 1, m: minute, mn: mN + 1 });
     return reply({ ok: true, remaining: perIp - ipN - 1 });
   }
 }

@@ -7,7 +7,9 @@ compatibility_date = "2025-01-01"
 # Dəqiq adları yoxlamaq üçün Google AI Studio-dakı model siyahısına bax.
 MODEL = "gemini-3.1-flash-lite"
 DAILY_PER_IP = "5"      # hər istifadəçiyə günlük pulsuz mesaj
-DAILY_GLOBAL = "1500"   # bütün sayt üçün günlük ümumi mesaj (büdcə qoruması)
+DAILY_GLOBAL = "450"    # bütün sayt üçün günlük tavan. Google pulsuz səviyyə: 500/gün, 50 ehtiyat qalır
+RPM_MAX = "12"          # dəqiqədə maksimum sorğu. Google pulsuz səviyyə: 15/dəq, 3 ehtiyat qalır
+AI_ENABLED = "true"     # kill switch: "false" yazıb deploy etsən, AI dərhal söndürülür
 MAX_OUTPUT = "600"      # cavabın maksimum token sayı
 # EXTRA_ORIGIN = "http://localhost:8080"   # yalnız yerli test üçün, sonra sil
 
