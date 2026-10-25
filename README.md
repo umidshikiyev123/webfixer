@@ -6,4 +6,4 @@ Statik sayt (GitHub Pages), öz serveri yoxdur. Alətlərin əksəriyyəti brauz
 - `index.html` — ana səhifə; hər alətin öz səhifəsi var (`qr-kod.html`, `parol-generatoru.html` və s.)
 - `assets/` — `fonts/` (öz şriftlərimiz), `style.css` (dizayn), `site.js` (animasiyalar), `tools.js` (alətlər), `common.js` (köməkçilər)
 - Reklam yerləri hər səhifədə qalır. AdSense təsdiqlənəndən sonra `<body class="ads-off">` içindən `ads-off` silin.
-- Əlaqə e-poçtu: umidshk@gmail.com
+- Əlaqə e-poçtu: info@webfixer.space

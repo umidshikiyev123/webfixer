@@ -385,7 +385,7 @@ function initTimer(root){
 
 /* ---------- 9. ARAŞDIRMA KÖMƏKÇİSİ (Wikipedia + Crossref) ---------- */
 function initResearch(root){
-  const MAIL = 'umidshk@gmail.com';               // Crossref "polite pool" üçün əlaqə e-poçtu
+  const MAIL = 'info@webfixer.space';               // Crossref "polite pool" üçün əlaqə e-poçtu
   const LANGS = {az:'Azərbaycan dili', en:'English', tr:'Türkçe', ru:'Русский'};
   const HIST_KEY = 'mt_research_hist';
 
