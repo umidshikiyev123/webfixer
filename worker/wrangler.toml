@@ -1,0 +1,24 @@
+name = "caspai"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Gemini modeli. Ən ucuz seçim: gemini-2.5-flash-lite.
+# Daha yeni Flash-Lite istəsən, Google AI Studio-dakı model siyahısından dəqiq adı yoxla.
+MODEL = "gemini-2.5-flash-lite"
+DAILY_PER_IP = "5"      # hər istifadəçiyə günlük pulsuz mesaj
+DAILY_GLOBAL = "1500"   # bütün sayt üçün günlük ümumi mesaj (büdcə qoruması)
+MAX_OUTPUT = "600"      # cavabın maksimum token sayı
+# EXTRA_ORIGIN = "http://localhost:8080"   # yalnız yerli test üçün, sonra sil
+
+[[durable_objects.bindings]]
+name = "LIMITER"
+class_name = "Limiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Limiter"]
+
+# Gizli açarlar fayla YAZILMIR, əmrlə əlavə olunur:
+#   npx wrangler secret put GEMINI_API_KEY
+#   npx wrangler secret put IP_SALT      (istənilən uzun təsadüfi mətn)
