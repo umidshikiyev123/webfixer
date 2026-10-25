@@ -397,3 +397,9 @@ input[type=date]:focus{border-color:var(--navy-2);box-shadow:0 0 0 4px rgba(37,9
 [data-theme="dark"] .site-footer{background:#050a15}
 [data-theme="dark"] .logo{color:#fff}
 [data-theme="dark"] .site-header .logo b{color:#8db4ff}
+
+/* ===================== Bələdçi səhifələri ===================== */
+.prose .ex{background:var(--soft);border-left:4px solid var(--blue);border-radius:8px;padding:12px 16px;margin:12px 0 16px;color:var(--ink);line-height:1.8}
+.prose .cta{background:var(--soft);border:1px solid #d6e1f5;border-radius:12px;padding:16px 18px;margin:26px 0}
+.prose .cta a,.guide-link a{font-weight:600}
+.guide-link{margin:22px 0;padding:12px 16px;background:var(--soft);border-radius:10px}
