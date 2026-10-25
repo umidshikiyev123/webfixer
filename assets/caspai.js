@@ -23,14 +23,14 @@ function initCaspAI(root) {
     '<div class="cai-app">' +
       '<div class="cai-bar"><div class="cai-bar-in">' +
         '<a class="cai-back" href="/" aria-label="Ana səhifəyə qayıt">← Ana səhifə</a>' +
-        '<div class="cai-logo"><img src="/assets/caspai-logo.png" alt="CaspAI" width="640" height="203"></div>' +
+        '<div class="cai-logo">Casp<b>AI</b></div>' +
         '<div class="cai-left" id="caiLeft" aria-live="polite"></div>' +
       '</div></div>' +
       '<div class="cai-log" id="caiLog" role="log" aria-live="polite"><div class="cai-log-in" id="caiLogIn"></div></div>' +
       '<div class="cai-foot"><div class="cai-foot-in">' +
         '<form class="cai-form" id="caiForm">' +
           '<textarea id="caiInput" rows="1" maxlength="' + MAX_CHARS + '" placeholder="Mesaj yaz…" aria-label="Mesaj"></textarea>' +
-          '<button class="cai-send" id="caiSend" type="submit" aria-label="Göndər">→</button>' +
+          '<button class="cai-send" id="caiSend" type="submit" aria-label="Göndər"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>' +
         '</form>' +
         '<p class="cai-note">Cavablar yanlış ola bilər. Parol, kart nömrəsi və şəxsi məlumat yazmayın. ' +
         'Mesajlar cavab üçün Google-un AI xidmətinə göndərilir. <a href="/privacy.html">Məxfilik</a></p>' +
