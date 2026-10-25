@@ -2,16 +2,15 @@
    CaspAI ayarı — AI-ı açmaq üçün yalnız bu faylı dəyiş:
      enabled → true   (api ünvanı artıq yazılıb)
    enabled = false olanda ana səhifədə heç nə görünmür, caspai.html "Tezliklə" göstərir.
-   enabled = true olanda ana səhifədə üç şey çıxır:
-     1) "Sayt haqqında" bölməsinin ortasında parlayan "CaspAI ilə söhbət et" düyməsi
-     2) sağ üstdə qısa CaspAI yazısı
-     3) alətlər siyahısının əvvəlində CaspAI kartı
+   enabled = true olanda ana səhifədə iki şey çıxır:
+     1) yuxarıda "Alətlərə bax" və "Sayt haqqında" arasında loqolu CaspAI düyməsi
+     2) alətlər siyahısının əvvəlində CaspAI kartı
    ===================================================================== */
 window.CASPAI = {
   enabled: true,
   api: 'https://caspai.wf-caspai.workers.dev/chat',
-  // Sağ üstdəki qısa təsvir. Yoxlana bilməyən iddialar (məs. "ilk", "ən yaxşı") yazma.
-  tagline: 'Azərbaycan dilində AI köməkçi'
+  // Düymənin altındakı qısa təsvir. Yoxlana bilməyən iddialar (məs. "ilk", "ən yaxşı") yazma.
+  tagline: 'Azərbaycan dilində AI köməkçi · gündə 5 pulsuz mesaj'
 };
 
 (function () {
@@ -22,26 +21,18 @@ window.CASPAI = {
   // Stil faylı (yalnız açıq olanda yüklənir)
   var l = d.createElement('link'); l.rel = 'stylesheet'; l.href = '/assets/caspai.css'; d.head.appendChild(l);
 
-  // 1) "Sayt haqqında" bölməsinin ortasında düymə
-  var about = d.querySelector('#about .wrap');
-  if (about) {
-    var w = d.createElement('div'); w.className = 'cai-cta-wrap';
-    w.innerHTML = '<a class="cai-cta" href="/caspai.html"><span class="cai-dots"><i></i><i></i><i></i><i></i></span>' +
-      '<span>CaspAI ilə söhbət et</span><span class="cai-arr">→</span></a>';
-    about.appendChild(w);
+  // 1) Ana səhifənin yuxarısında "Alətlərə bax" və "Sayt haqqında" düymələrinin arasında CaspAI düyməsi
+  var btns = d.querySelector('.hero .btns');
+  if (btns) {
+    var a = d.createElement('a'); a.className = 'cai-hero'; a.href = '/caspai.html';
+    a.setAttribute('aria-label', 'CaspAI ilə söhbət et');
+    a.innerHTML = '<img src="/assets/caspai-logo.png" alt="CaspAI" width="640" height="203"><span class="cai-hero-t">ilə söhbət et <i>→</i></span>';
+    btns.insertBefore(a, btns.children[1] || null);
+    var cap = d.createElement('p'); cap.className = 'cai-hero-cap'; cap.textContent = c.tagline;
+    btns.parentNode.insertBefore(cap, btns.nextSibling);
   }
 
-  // 2) Sağ üstdə yazı (üst zolaqda, tema düyməsinin yanında)
-  var top = d.querySelector('.topbar .wrap');
-  if (top) {
-    var a = d.createElement('a'); a.className = 'cai-top'; a.href = '/caspai.html';
-    var b = d.createElement('b'); b.textContent = '🤖 CaspAI';
-    var s = d.createElement('span'); s.className = 'cai-top-sub'; s.textContent = ' · ' + c.tagline;
-    a.appendChild(b); a.appendChild(s);
-    top.insertBefore(a, d.getElementById('themeBtn') || null);
-  }
-
-  // 3) Alətlər siyahısında kart
+  // 2) Alətlər siyahısında kart
   var grid = d.getElementById('grid');
   if (grid) {
     var k = d.createElement('a');
