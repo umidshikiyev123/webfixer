@@ -1,5 +1,5 @@
 /* =====================================================================
-   CaspAI — chat səhifəsinin skripti
+   CaspAI — sadə chat səhifəsi
    Mesajlar yalnız yaddaşda saxlanır (brauzerdə heç nə yazılmır).
    Bütün mətn textContent ilə göstərilir (XSS qorunması).
    ===================================================================== */
@@ -10,36 +10,40 @@ function initCaspAI(root) {
 
   if (!configured) {
     root.innerHTML = '<div class="cai-soon"><div class="cai-soon-ico">🤖</div><h2>CaspAI tezliklə açılır</h2>' +
-      '<p>Azərbaycan dilində AI köməkçimiz hazırlanır. Bu arada <a href="/#tools">digər alətlərimizə</a> baxa bilərsiniz.</p></div>';
+      '<p>Azərbaycan dilində AI köməkçimiz hazırlanır. Bu arada <a href="/">digər alətlərimizə</a> baxa bilərsiniz.</p></div>';
     return;
   }
 
   var MAX_CHARS = 500;
-  var history = [];           // {role:'user'|'assistant', content}
+  var history = [];   // {role:'user'|'assistant', content}
   var busy = false;
   var statusUrl = cfg.api.replace(/\/chat\/?$/, '/status');
 
   root.innerHTML =
-    '<div class="cai">' +
-      '<div class="cai-head"><div><b>🤖 CaspAI</b><span class="cai-badge">AI köməkçi</span></div>' +
-      '<div class="cai-left" id="caiLeft" aria-live="polite"></div></div>' +
-      '<div class="cai-log" id="caiLog" role="log" aria-live="polite"></div>' +
-      '<div class="cai-sugg" id="caiSugg"></div>' +
-      '<form class="cai-form" id="caiForm">' +
-        '<textarea id="caiInput" rows="2" maxlength="' + MAX_CHARS + '" placeholder="Sualını yaz… (Enter — göndər, Shift+Enter — yeni sətir)" aria-label="Mesaj"></textarea>' +
-        '<button class="btn" id="caiSend" type="submit">Göndər</button>' +
-      '</form>' +
-      '<p class="cai-note">Cavablar yanlış ola bilər, vacib məsələlərdə yoxlayın. Parol, kart nömrəsi və şəxsi məlumat yazmayın. ' +
-      'Mesajlarınız cavab hazırlamaq üçün Google-un AI xidmətinə göndərilir.</p>' +
+    '<div class="cai-app">' +
+      '<div class="cai-bar"><div class="cai-bar-in">' +
+        '<a class="cai-back" href="/" aria-label="Ana səhifəyə qayıt">← Geri</a>' +
+        '<div class="cai-title"><i></i>CaspAI</div>' +
+        '<div class="cai-left" id="caiLeft" aria-live="polite"></div>' +
+      '</div></div>' +
+      '<div class="cai-log" id="caiLog" role="log" aria-live="polite"><div class="cai-log-in" id="caiLogIn"></div></div>' +
+      '<div class="cai-foot"><div class="cai-foot-in">' +
+        '<form class="cai-form" id="caiForm">' +
+          '<textarea id="caiInput" rows="1" maxlength="' + MAX_CHARS + '" placeholder="Mesaj yaz…" aria-label="Mesaj"></textarea>' +
+          '<button class="cai-send" id="caiSend" type="submit" aria-label="Göndər">➤</button>' +
+        '</form>' +
+        '<p class="cai-note">Cavablar yanlış ola bilər. Parol, kart nömrəsi və şəxsi məlumat yazmayın. ' +
+        'Mesajlar cavab üçün Google-un AI xidmətinə göndərilir. <a href="/privacy.html">Məxfilik</a></p>' +
+      '</div></div>' +
     '</div>';
 
-  var log = root.querySelector('#caiLog'), input = root.querySelector('#caiInput'),
-      send = root.querySelector('#caiSend'), left = root.querySelector('#caiLeft'),
-      sugg = root.querySelector('#caiSugg'), form = root.querySelector('#caiForm');
+  var log = root.querySelector('#caiLog'), logIn = root.querySelector('#caiLogIn'),
+      input = root.querySelector('#caiInput'), send = root.querySelector('#caiSend'),
+      left = root.querySelector('#caiLeft'), form = root.querySelector('#caiForm');
 
   function setLeft(n) {
     if (typeof n !== 'number') { left.textContent = ''; return; }
-    left.textContent = 'Bu gün qalan: ' + n + ' mesaj';
+    left.textContent = 'Qalan: ' + n;
     left.classList.toggle('zero', n <= 0);
   }
 
@@ -47,30 +51,34 @@ function initCaspAI(root) {
     var b = document.createElement('div');
     b.className = 'cai-msg ' + (role === 'user' ? 'me' : 'ai') + (cls ? ' ' + cls : '');
     b.textContent = text;
-    log.appendChild(b);
+    logIn.appendChild(b);
     log.scrollTop = log.scrollHeight;
     return b;
   }
 
-  bubble('assistant', 'Salam! Mən CaspAI-yəm, WebFixer-in Azərbaycan dilində AI köməkçisi. Nə ilə kömək edə bilərəm?');
+  bubble('assistant', 'Salam! Mən CaspAI-yəm. Nə ilə kömək edə bilərəm?');
 
-  ['Hər gün 10 dəqiqə ingilis dili öyrənmək üçün plan hazırla',
-   'İş müsahibəsinə necə hazırlaşım?',
-   'Mənə qısa bir motivasiya mətni yaz'].forEach(function (t) {
+  var sugg = document.createElement('div');
+  sugg.className = 'cai-sugg';
+  ['İngilis dili öyrənmək üçün plan hazırla', 'İş müsahibəsinə necə hazırlaşım?', 'Qısa motivasiya mətni yaz'].forEach(function (t) {
     var c = document.createElement('button');
-    c.type = 'button'; c.className = 'chip'; c.textContent = t;
+    c.type = 'button'; c.textContent = t;
     c.addEventListener('click', function () { input.value = t; submit(); });
     sugg.appendChild(c);
   });
+  logIn.appendChild(sugg);
 
-  // Qalan mesaj sayını yüklə (limit istifadə etmir)
+  // Qalan mesaj sayı (limit istifadə etmir)
   fetch(statusUrl).then(function (r) { return r.json(); })
     .then(function (d) { setLeft(d.remaining); }).catch(function () {});
+
+  function grow() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 140) + 'px'; }
+  input.addEventListener('input', grow);
 
   function submit() {
     var text = input.value.trim();
     if (!text || busy) return;
-    busy = true; send.disabled = true; input.value = ''; sugg.hidden = true;
+    busy = true; send.disabled = true; input.value = ''; grow(); sugg.hidden = true;
     bubble('user', text);
     history.push({ role: 'user', content: text });
     var wait = bubble('assistant', 'CaspAI yazır…', 'wait');
