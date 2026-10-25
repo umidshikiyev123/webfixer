@@ -47,6 +47,44 @@ function initCaspAI(root) {
     left.classList.toggle('zero', n <= 0);
   }
 
+  /* Modelin buraxdığı LaTeX-i oxunaqlı Unicode-a çevirir (məs. $s = v_0t + \frac{at^2}{2}$ → s = v₀t + (at²)/(2)) */
+  var SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'⁺','n':'ⁿ' };
+  var SUB = { '0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉' };
+  function mapAll(s, map) { var o = ''; for (var i = 0; i < s.length; i++) { if (!map[s[i]]) return null; o += map[s[i]]; } return o; }
+  function texify(t) {
+    var prev;
+    do { prev = t; t = t.replace(/\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '($1)/($2)'); } while (t !== prev);
+    t = t.replace(/\\sqrt\s*\{([^{}]*)\}/g, '√($1)')
+      .replace(/\\(?:text|mathrm|mathbf|operatorname)\s*\{([^{}]*)\}/g, '$1')
+      .replace(/\\cdot/g, '·').replace(/\\times/g, '×').replace(/\\approx/g, '≈').replace(/\\pm/g, '±')
+      .replace(/\\leq?(?![a-z])/g, '≤').replace(/\\geq?(?![a-z])/g, '≥').replace(/\\neq/g, '≠').replace(/\\infty/g, '∞')
+      .replace(/\\Delta/g, 'Δ').replace(/\\delta/g, 'δ').replace(/\\alpha/g, 'α').replace(/\\beta/g, 'β')
+      .replace(/\\omega/g, 'ω').replace(/\\theta/g, 'θ').replace(/\\pi(?![a-z])/g, 'π').replace(/\\mu/g, 'μ')
+      .replace(/\\rho/g, 'ρ').replace(/\\sigma/g, 'σ').replace(/\\lambda/g, 'λ')
+      .replace(/\\(?:left|right|,|;|!|quad)\s?/g, '').replace(/\\([%&_#])/g, '$1');
+    t = t.replace(/\^\{([^{}]*)\}/g, function (m, a) { var s = mapAll(a, SUP); return s || '^(' + a + ')'; })
+      .replace(/\^([0-9n])/g, function (m, a) { return SUP[a]; })
+      .replace(/_\{([^{}]*)\}/g, function (m, a) { var s = mapAll(a, SUB); return s || '_' + a; })
+      .replace(/_([0-9])/g, function (m, a) { return SUB[a]; });
+    return t.replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/\$/g, '');
+  }
+
+  /* Cavabı təhlükəsiz göstərir: yalnız **qalın** və siyahı işarələri çevrilir, HTML heç vaxt işlənmir (XSS yoxdur) */
+  function renderAI(el, text) {
+    el.textContent = '';
+    texify(text).split('\n').forEach(function (line, i) {
+      if (i) el.appendChild(document.createTextNode('\n'));
+      line = line.replace(/^\s*#{1,6}\s+/, '').replace(/^(\s*)[*-]\s+/, '$1• ');
+      line.split(/(\*\*[^*]+\*\*)/).forEach(function (part) {
+        if (/^\*\*[^*]+\*\*$/.test(part)) {
+          var s = document.createElement('strong'); s.textContent = part.slice(2, -2); el.appendChild(s);
+        } else if (part) {
+          el.appendChild(document.createTextNode(part.replace(/`/g, '')));
+        }
+      });
+    });
+  }
+
   function bubble(role, text, cls) {
     var b = document.createElement('div');
     b.className = 'cai-msg ' + (role === 'user' ? 'me' : 'ai') + (cls ? ' ' + cls : '');
@@ -99,7 +137,7 @@ function initCaspAI(root) {
       var d = res.d || {};
       if (typeof d.remaining === 'number') setLeft(d.remaining);
       if (res.ok && d.reply) {
-        wait.textContent = d.reply; wait.classList.remove('wait');
+        renderAI(wait, d.reply); wait.classList.remove('wait');
         history.push({ role: 'assistant', content: d.reply });
       } else {
         wait.textContent = d.error || 'Xəta baş verdi. Bir az sonra yenidən yoxla.';
