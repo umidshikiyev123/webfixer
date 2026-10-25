@@ -21,7 +21,7 @@ function initCaspAI(root) {
 
   root.innerHTML =
     '<div class="cai">' +
-      '<div class="cai-head"><div><b>🤖 CaspAI</b><span class="cai-badge">Gemini əsasında</span></div>' +
+      '<div class="cai-head"><div><b>🤖 CaspAI</b><span class="cai-badge">AI köməkçi</span></div>' +
       '<div class="cai-left" id="caiLeft" aria-live="polite"></div></div>' +
       '<div class="cai-log" id="caiLog" role="log" aria-live="polite"></div>' +
       '<div class="cai-sugg" id="caiSugg"></div>' +
@@ -30,7 +30,7 @@ function initCaspAI(root) {
         '<button class="btn" id="caiSend" type="submit">Göndər</button>' +
       '</form>' +
       '<p class="cai-note">Cavablar yanlış ola bilər, vacib məsələlərdə yoxlayın. Parol, kart nömrəsi və şəxsi məlumat yazmayın. ' +
-      'Mesajlarınız cavab hazırlamaq üçün Google Gemini-yə göndərilir.</p>' +
+      'Mesajlarınız cavab hazırlamaq üçün Google-un AI xidmətinə göndərilir.</p>' +
     '</div>';
 
   var log = root.querySelector('#caiLog'), input = root.querySelector('#caiInput'),

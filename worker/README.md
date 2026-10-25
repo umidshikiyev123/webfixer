@@ -57,6 +57,6 @@ Cavab: `{"remaining":5,"limit":5}`.
 
 ## Qeydlər
 
-- Model `wrangler.toml`-da `MODEL` ilə dəyişir. İlkin dəyər `gemini-2.5-flash-lite`-dir (ən ucuz). Daha yeni Flash-Lite istəsən, Google AI Studio-dakı model siyahısından dəqiq adı yoxla.
+- Model `wrangler.toml`-da `MODEL` ilə dəyişir. İlkin dəyər `gemini-3.1-flash-lite`-dir. Google köhnə modelləri (məsələn 2.5) yeni hesablar üçün bağlayır, ona görə xəta çıxsa model adını AI Studio-dakı siyahıdan yoxla.
 - Yalnız `webfixer.space` ünvanından gələn brauzer sorğuları qəbul edilir. Yerli test üçün `EXTRA_ORIGIN` sətrini aç, sonra sil.
 - Növbəti addım (trafik artarsa): Cloudflare Turnstile (robot yoxlaması) əlavə etmək.

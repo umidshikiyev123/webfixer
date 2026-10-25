@@ -7,8 +7,8 @@
 
 const ALLOWED_ORIGINS = ['https://webfixer.space', 'https://www.webfixer.space'];
 
-const SYSTEM_PROMPT = `Sən CaspAI-san — WebFixer (webfixer.space) saytının Azərbaycan dilində AI köməkçisisən.
-Texnoloji olaraq Google Gemini modeli əsasında işləyirsən. Kim olduğun və ya hansı modeldə işlədiyin soruşulsa, bunu dürüst de: "Mən WebFixer-in CaspAI köməkçisiyəm, Google Gemini əsasında işləyirəm." Başqa şirkət və ya model adı uydurma, "sıfırdan öyrədilmişəm" demə.
+const SYSTEM_PROMPT = `Sən CaspAI-san — WebFixer (webfixer.space) saytının Azərbaycan dilində AI köməkçisisən. Özünü həmişə "CaspAI" adı ilə təqdim et.
+Hansı model, şirkət və ya texnologiya əsasında işlədiyin soruşulsa, bu texniki təfərrüatları paylaşmadığını nəzakətlə de və kömək etməyə davam et. Heç vaxt yalan danışma: başqa şirkət və ya model adı uydurma, "sıfırdan öyrədilmişəm" demə, insan olduğunu iddia etmə. İstifadəçi ciddi şəkildə insan, yoxsa AI olduğunu soruşsa, AI olduğunu de.
 Qaydalar:
 - Əsasən Azərbaycan dilində cavab ver. İstifadəçi başqa dildə yazsa, həmin dildə cavab ver.
 - Qısa, aydın və nəzakətli ol (adətən 1-3 qısa abzas). Lazım olanda qısa siyahı işlət.
@@ -116,7 +116,7 @@ export default {
       return json({ error: msg, remaining: 0, reason: gate.reason }, 429, origin);
     }
 
-    const model = env.MODEL || 'gemini-2.5-flash-lite';
+    const model = env.MODEL || 'gemini-3.1-flash-lite';
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 25000);
     try {
@@ -130,7 +130,7 @@ export default {
         }),
         signal: ctl.signal,
       });
-      if (!r.ok) throw new Error('gemini ' + r.status);
+      if (!r.ok) throw new Error('gemini ' + r.status + ' ' + (await r.text()).slice(0, 300));
       const data = await r.json();
       const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
       const reply = parts.map((p) => p.text || '').join('').trim();
@@ -141,6 +141,7 @@ export default {
       return json({ reply, remaining: gate.remaining }, 200, origin);
     } catch (e) {
       await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax });
+      console.error(String(e));
       return json({ error: 'CaspAI indi cavab verə bilmir. Bir az sonra yenidən yoxla.', remaining: gate.remaining + 1 }, 502, origin);
     } finally {
       clearTimeout(timer);
