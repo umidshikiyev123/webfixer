@@ -8,7 +8,7 @@
      3) alətlər siyahısının əvvəlində CaspAI kartı
    ===================================================================== */
 window.CASPAI = {
-  enabled: false,
+  enabled: true,
   api: 'https://caspai.wf-caspai.workers.dev/chat',
   // Sağ üstdəki qısa təsvir. Yoxlana bilməyən iddialar (məs. "ilk", "ən yaxşı") yazma.
   tagline: 'Azərbaycan dilində AI köməkçi'
