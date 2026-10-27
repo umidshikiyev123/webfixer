@@ -1,173 +1,161 @@
-<!DOCTYPE html>
-<html lang="az">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CaspAI — Fakt Yoxlayıcı</title>
-<meta name="description" content="CaspAI: iddianı yazın, süni intellekt onu internetdə yoxlasın və mənbələri göstərsin.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#09090f; --panel:#12121d; --panel2:#181827; --ink:#f1f1ff; --muted:#9a9ab8;
-  --purple:#a855f7; --cyan:#22d3ee; --lime:#a3e635; --amber:#fbbf24; --danger:#fb7185;
-  --line:#2c2c44; --bw:3px; --r:10px;
-  --font:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.55;
-  background-image:
-    radial-gradient(circle at 15% 0%,rgba(168,85,247,.18),transparent 40%),
-    radial-gradient(circle at 90% 20%,rgba(34,211,238,.12),transparent 40%),
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:auto,auto,36px 36px,36px 36px;background-attachment:fixed;
-}
-a{color:var(--cyan)}
-header{border-bottom:var(--bw) solid var(--purple);background:rgba(9,9,15,.88)}
-.wrap{max-width:820px;margin:0 auto;padding:0 16px}
-.head-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:12px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.4rem;color:var(--ink);text-decoration:none}
-.logo i{font-style:normal;display:grid;place-items:center;width:40px;height:40px;background:var(--purple);border:var(--bw) solid var(--ink);border-radius:8px;box-shadow:3px 3px 0 var(--cyan)}
-.logo b{color:var(--cyan)}
-.back{font-size:.9rem;color:var(--muted);text-decoration:none}
-.back:hover{color:var(--cyan)}
-.hero{margin:28px 0 20px;padding:24px 22px;background:var(--panel);border:var(--bw) solid var(--ink);border-radius:14px;box-shadow:8px 8px 0 var(--purple)}
-.hero h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.15;letter-spacing:-1px}
-.hero h1 em{font-style:normal;color:var(--cyan);text-shadow:0 0 18px rgba(34,211,238,.6)}
-.hero p{color:var(--muted);margin-top:8px}
-.panel{background:var(--panel);border:var(--bw) solid var(--ink);border-radius:14px;padding:22px;box-shadow:8px 8px 0 var(--cyan)}
-label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-textarea{width:100%;min-height:120px;resize:vertical;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:.95rem;outline:none}
-textarea:focus{border-color:var(--purple);box-shadow:3px 3px 0 var(--purple)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
-.count{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
-.btn{cursor:pointer;background:var(--purple);color:#fff;font-family:inherit;font-size:1rem;font-weight:700;border:var(--bw) solid var(--ink);border-radius:8px;padding:10px 20px;box-shadow:4px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s}
-.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
-.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
-.btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:4px 4px 0 var(--ink)}
-.examples{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
-.chip{cursor:pointer;font-family:inherit;color:var(--ink);background:var(--panel2);border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.85rem}
-.chip:hover{border-color:var(--purple)}
-#result{margin-top:22px}
-.card{background:var(--panel);border:var(--bw) solid var(--line);border-radius:12px;padding:18px}
-.badge{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:6px;border:2px solid;margin-bottom:10px}
-.v-DOGRUDUR{color:var(--lime);border-color:var(--lime)}
-.v-YANLISDIR{color:var(--danger);border-color:var(--danger)}
-.v-QISMEN{color:var(--amber);border-color:var(--amber)}
-.v-YOXLANA_BILMEDI{color:var(--muted);border-color:var(--muted)}
-.card p{color:#d4d4ec}
-.card h3{margin:16px 0 6px;font-size:1rem;color:var(--cyan)}
-.card ul{padding-left:20px}
-.card li{margin-bottom:4px;word-break:break-word}
-.err{border-color:var(--danger);color:var(--danger)}
-.note{margin:22px 0 40px;color:var(--muted);font-size:.85rem}
-.spin{display:inline-block;width:14px;height:14px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}
-@keyframes s{to{transform:rotate(360deg)}}
-</style>
-</head>
-<body>
-<header>
-  <div class="wrap head-row">
-    <a class="logo" href="./"><i>🔎</i><span>Casp<b>AI</b></span></a>
-    <a class="back" href="/">← MikroTools</a>
-  </div>
-</header>
+// CaspAI — Cloudflare Worker (fakt yoxlayıcı) — v2
+// Secret:   GEMINI_API_KEY
+// Variable: ALLOWED_ORIGIN  (məs: https://webfixer.space) — vergüllə bir neçə ola bilər
+// İstəyə bağlı Variable: GEMINI_MODEL   (ilk cəhd üçün model, məs: gemini-3.1-flash-lite)
+// İstəyə bağlı Variable: GEMINI_FALLBACKS (vergüllə ehtiyat modellər)
 
-<main class="wrap">
-  <section class="hero">
-    <h1>İddianı yaz. <em>Yoxlayaq.</em></h1>
-    <p>CaspAI iddianı internetdə axtarır, nəticəni izah edir və mənbələri göstərir.</p>
-  </section>
+const MAX_CLAIM = 600;
+const DAILY_LIMIT = 20; // bir IP üçün gündə maksimum sorğu (isolate yaddaşında, sadə qoruma)
+const hits = new Map();
 
-  <section class="panel">
-    <label for="claim">İddia və ya xəbər</label>
-    <textarea id="claim" maxlength="600" placeholder="məs: Xəzər dənizi dünyanın ən böyük gölüdür"></textarea>
-    <div class="row">
-      <span class="count" id="count">0 / 600</span>
-      <button class="btn" id="go">Yoxla</button>
-    </div>
-    <div class="examples">
-      <button class="chip" type="button">Xəzər dənizi dünyanın ən böyük gölüdür</button>
-      <button class="chip" type="button">İnsanlar beyinlərinin yalnız 10%-ni istifadə edir</button>
-    </div>
-  </section>
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+const DEFAULT_FALLBACKS = 'gemini-3.5-flash-lite';
 
-  <div id="result" aria-live="polite"></div>
-
-  <p class="note">CaspAI süni intellektdən istifadə edir və səhv edə bilər. Vacib məsələlərdə mənbələrə özünüz baxın.</p>
-</main>
-
-<script>
-// Cloudflare Worker ünvanı (sonda /check ilə)
-const WORKER_URL = 'https://cold-glitter-c4a0.denemeclaude490.workers.dev/check';
-
-const LABELS = {
-  DOGRUDUR: '✓ DOĞRUDUR',
-  YANLISDIR: '✗ YANLIŞDIR',
-  QISMEN: '≈ QISMƏN DOĞRUDUR',
-  YOXLANA_BILMEDI: '? YOXLANA BİLMƏDİ'
-};
-
-const $ = s => document.querySelector(s);
-const claim = $('#claim'), go = $('#go'), out = $('#result');
-
-claim.addEventListener('input', () => { $('#count').textContent = claim.value.length + ' / 600'; });
-document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-  claim.value = c.textContent; claim.dispatchEvent(new Event('input')); claim.focus();
-}));
-
-function showError(msg) {
-  out.innerHTML = '';
-  const d = document.createElement('div'); d.className = 'card err'; d.textContent = msg;
-  out.appendChild(d);
+function corsHeaders(origin, env) {
+  const allowed = (env.ALLOWED_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
+  const ok = allowed.includes(origin);
+  return {
+    'Access-Control-Allow-Origin': ok ? origin : (allowed[0] || 'null'),
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
 }
 
-function showResult(r) {
-  out.innerHTML = '';
-  const card = document.createElement('div'); card.className = 'card';
-  const b = document.createElement('span');
-  const v = LABELS[r.verdict] ? r.verdict : 'YOXLANA_BILMEDI';
-  b.className = 'badge v-' + v; b.textContent = LABELS[v];
-  const p = document.createElement('p'); p.textContent = r.summary || '';
-  card.append(b, p);
-  const list = (r.sources || []).filter(s => /^https?:\/\//.test(s.url));
-  if (list.length) {
-    const h = document.createElement('h3'); h.textContent = 'Mənbələr';
-    const ul = document.createElement('ul');
-    list.forEach(s => {
-      const li = document.createElement('li'), a = document.createElement('a');
-      a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = s.title || s.url;
-      li.appendChild(a); ul.appendChild(li);
-    });
-    card.append(h, ul);
+function json(data, status, cors) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors },
+  });
+}
+
+function rateLimited(ip) {
+  const day = new Date().toISOString().slice(0, 10);
+  const key = ip + '|' + day;
+  const n = (hits.get(key) || 0) + 1;
+  hits.set(key, n);
+  if (hits.size > 5000) {
+    for (const k of hits.keys()) if (!k.endsWith(day)) hits.delete(k);
   }
-  out.appendChild(card);
+  return n > DAILY_LIMIT;
 }
 
-go.addEventListener('click', async () => {
-  const text = claim.value.trim();
-  if (text.length < 5) { showError('İddia çox qısadır. Ən azı bir cümlə yazın.'); return; }
-  go.disabled = true; go.innerHTML = '<span class="spin"></span>Yoxlanılır...';
-  out.innerHTML = '';
+function buildPrompt(claim, grounded) {
+  const how = grounded
+    ? 'Aşağıdakı iddianı Google Search ilə yoxla.'
+    : 'Aşağıdakı iddianı öz biliyinə əsasən qiymətləndir. Əmin deyilsənsə YOXLANA_BILMEDI de.';
+  return `Sən fakt yoxlayıcısan. ${how}
+Cavabı YALNIZ bu JSON formatında, Azərbaycan dilində ver (başqa mətn, markdown yox):
+{"verdict":"DOGRUDUR | YANLISDIR | QISMEN | YOXLANA_BILMEDI","summary":"2-4 cümlə izah"}
+
+İddia: """${claim}"""`;
+}
+
+async function callGemini(env, model, claim, grounded) {
+  const body = { contents: [{ role: 'user', parts: [{ text: buildPrompt(claim, grounded) }] }] };
+  if (grounded) body.tools = [{ google_search: {} }];
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 25000);
   try {
-    const res = await fetch(WORKER_URL, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ claim: text })
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+      body: JSON.stringify(body),
+      signal: ctl.signal,
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) { showError(data.error || ('Xəta: ' + res.status)); }
-    else { showResult(data); }
-  } catch (e) {
-    showError('Serverə qoşulmaq olmadı. İnterneti yoxlayın və yenidən cəhd edin.');
+    return res;
   } finally {
-    go.disabled = false; go.textContent = 'Yoxla';
+    clearTimeout(timer);
   }
-});
-</script>
-</body>
-</html>
+}
+
+export default {
+  async fetch(request, env) {
+    const origin = request.headers.get('Origin') || '';
+    const cors = corsHeaders(origin, env);
+
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    if (request.method !== 'POST') return json({ error: 'Yalnız POST qəbul olunur' }, 405, cors);
+
+    const allowed = (env.ALLOWED_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
+    if (!allowed.includes(origin)) return json({ error: 'Bu ünvandan sorğu qəbul edilmir' }, 403, cors);
+
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (rateLimited(ip)) return json({ error: 'Gündəlik limit bitdi. Sabah yenidən cəhd edin.' }, 429, cors);
+
+    let body;
+    try { body = await request.json(); } catch { return json({ error: 'Yanlış sorğu formatı' }, 400, cors); }
+    const claim = String(body.claim || '').trim();
+    if (claim.length < 5) return json({ error: 'İddia çox qısadır' }, 400, cors);
+    if (claim.length > MAX_CLAIM) return json({ error: `İddia ${MAX_CLAIM} simvoldan uzun ola bilməz` }, 400, cors);
+    if (!env.GEMINI_API_KEY) return json({ error: 'Server konfiqurasiya xətası' }, 500, cors);
+
+    const models = [env.GEMINI_MODEL || DEFAULT_MODEL]
+      .concat((env.GEMINI_FALLBACKS || DEFAULT_FALLBACKS).split(',').map(s => s.trim()).filter(Boolean))
+      .filter((m, i, a) => a.indexOf(m) === i);
+
+    let okRes = null, grounded = true;
+    let lastStatus = 0, lastText = '', lastModel = '';
+    let saw429 = false;
+
+    outer:
+    for (const model of models) {
+      for (const g of [true, false]) {          // əvvəl axtarışla, olmasa axtarışsız
+        let res;
+        try {
+          res = await callGemini(env, model, claim, g);
+        } catch {
+          lastStatus = 0; lastText = 'əlaqə qurulmadı'; lastModel = model;
+          continue;
+        }
+        if (res.ok) { okRes = res; grounded = g; break outer; }
+        lastStatus = res.status; lastModel = model;
+        lastText = (await res.text()).slice(0, 1500);
+        console.error(`gemini ${res.status} model=${model} grounded=${g}: ${lastText}`);
+        if (res.status === 429) { saw429 = true; continue; }   // axtarışsız / başqa model yoxla
+        if (res.status === 404 || res.status === 400) break;    // bu model işləmir — növbətisinə keç
+        break outer;                                            // 401/403/5xx — dayandır
+      }
+    }
+
+    if (!okRes) {
+      if (saw429 && (lastStatus === 429 || lastStatus === 404 || lastStatus === 400)) {
+        return json({
+          error: 'Hazırda sorğuların sayı çoxdur. Zəhmət olmasa 1-2 dəqiqə sonra yenidən cəhd edin.',
+          detail: `model=${lastModel} status=${lastStatus} ${lastText}`,
+        }, 429, cors);
+      }
+      return json({
+        error: 'Gemini xətası (' + lastStatus + ')',
+        detail: `model=${lastModel} ${lastText}`,
+      }, 502, cors);
+    }
+
+    const data = await okRes.json();
+    const cand = (data.candidates || [])[0] || {};
+    const text = ((cand.content || {}).parts || []).map(p => p.text || '').join('').trim();
+
+    let verdict = 'YOXLANA_BILMEDI', summary = text;
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) {
+      try {
+        const o = JSON.parse(m[0]);
+        if (o.verdict) verdict = String(o.verdict).toUpperCase().replace(/[^A-Z_]/g, '');
+        if (o.summary) summary = String(o.summary);
+      } catch { /* mətn olduğu kimi qalır */ }
+    }
+    if (!['DOGRUDUR', 'YANLISDIR', 'QISMEN', 'YOXLANA_BILMEDI'].includes(verdict)) verdict = 'YOXLANA_BILMEDI';
+
+    const seen = new Set();
+    const sources = [];
+    for (const c of ((cand.groundingMetadata || {}).groundingChunks || [])) {
+      const w = c.web;
+      if (w && w.uri && !seen.has(w.uri)) {
+        seen.add(w.uri);
+        sources.push({ title: w.title || w.uri, url: w.uri });
+      }
+    }
+
+    return json({ verdict, summary: summary || 'Cavab alınmadı.', sources: sources.slice(0, 6), grounded }, 200, cors);
+  },
+};
