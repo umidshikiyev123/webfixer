@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaspAI — Fakt Yoxlayıcı</title>
+<meta name="description" content="CaspAI — Azərbaycan dilində iddiaları saniyələr içində yoxlayan süni intellekt alətidir. WebFixer tərəfindən hazırlanıb.">
+
+<!-- =====================================================================
+CaspAI — Tək fayllıq frontend
+---------------------------------------------------------------------
+QURAŞDIRMA:
+1) Bu faylı GitHub Pages reposuna (webfixer) "caspai/index.html" kimi
+   əlavə edin, ya da ayrıca "caspai.webfixer.space" subdomeni üçün
+   istifadə edin.
+2) Aşağıda WORKER_URL dəyərini öz Cloudflare Worker ünvanınızla
+   əvəz edin (worker.js faylına bax).
+===================================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#09090f; --panel:#12121d; --panel2:#181827; --ink:#f1f1ff; --muted:#9a9ab8;
+  --purple:#a855f7; --cyan:#22d3ee; --lime:#a3e635; --danger:#fb7185; --amber:#fbbf24;
+  --line:#2c2c44; --bw:3px; --r:10px;
+  --font:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5;
+  background-image:
+    radial-gradient(circle at 15% 0%,rgba(168,85,247,.18),transparent 40%),
+    radial-gradient(circle at 90% 20%,rgba(34,211,238,.12),transparent 40%),
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:auto,auto,36px 36px,36px 36px;
+  background-attachment:fixed;
+}
+a{color:var(--cyan)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+
+header{position:sticky;top:0;z-index:50;background:rgba(9,9,15,.88);backdrop-filter:blur(10px);border-bottom:var(--bw) solid var(--purple)}
+.head-row{display:flex;gap:12px;align-items:center;padding:14px 0;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:700;font-size:1.3rem;letter-spacing:-.5px}
+.logo i{font-style:normal;display:grid;place-items:center;width:38px;height:38px;background:var(--purple);border:var(--bw) solid var(--ink);border-radius:8px;box-shadow:3px 3px 0 var(--cyan)}
+.logo b{color:var(--cyan)}
+.by{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.by a{color:var(--muted);text-decoration:underline}
+
+.hero{padding:34px 0 10px;text-align:center}
+.hero h1{font-size:clamp(1.7rem,5vw,2.5rem);letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:var(--cyan);text-shadow:0 0 18px rgba(34,211,238,.5)}
+.hero p{color:var(--muted);margin-top:10px;max-width:560px;margin-inline:auto}
+
+.panel{background:var(--panel);border:var(--bw) solid var(--ink);border-radius:14px;padding:22px;box-shadow:8px 8px 0 var(--purple);margin:26px 0}
+label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+textarea{width:100%;min-height:110px;background:var(--bg);border:2px solid var(--line);border-radius:8px;padding:12px;outline:none;color:var(--ink);font-family:inherit;font-size:1rem;resize:vertical}
+textarea:focus{border-color:var(--purple);box-shadow:3px 3px 0 var(--purple)}
+.hint{font-size:.78rem;color:var(--muted);margin-top:6px}
+.btn{cursor:pointer;background:var(--purple);color:#fff;font-weight:700;border:var(--bw) solid var(--ink);border-radius:8px;padding:12px 22px;box-shadow:4px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s;font-size:1rem;margin-top:14px}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+#result{margin-top:22px;display:none}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;font-size:.85rem;padding:6px 14px;border-radius:999px;border:2px solid var(--ink)}
+.verdict.true{background:var(--lime);color:#0a2000}
+.verdict.false{background:var(--danger);color:#2a0008}
+.verdict.mixed{background:var(--amber);color:#2a1d00}
+.verdict.unknown{background:var(--panel2);color:var(--muted);border-color:var(--line)}
+.explain{margin-top:14px;color:#d4d4ec;line-height:1.65}
+.sources{margin-top:18px}
+.sources h3{font-size:.85rem;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.sources ul{list-style:none}
+.sources li{padding:9px 0;border-top:1px solid var(--line);font-size:.92rem}
+.sources li:first-child{border-top:none}
+.sources a{text-decoration:none;word-break:break-word}
+.sources a:hover{text-decoration:underline}
+.loading{display:none;align-items:center;gap:10px;color:var(--muted);font-family:var(--mono);font-size:.9rem;margin-top:14px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.error{display:none;margin-top:14px;color:var(--danger);font-family:var(--mono);font-size:.88rem;background:rgba(251,113,133,.08);border:2px dashed var(--danger);border-radius:8px;padding:12px}
+
+.info{margin-top:10px;padding-top:20px;border-top:2px dashed var(--line);color:#d4d4ec}
+.info h2{font-size:1.2rem;margin-bottom:10px}
+.info .box{background:var(--panel);border:var(--bw) solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.info h3{color:var(--cyan);margin-bottom:6px;font-size:1rem}
+.info p{color:var(--muted);font-size:.92rem}
+
+footer{border-top:var(--bw) solid var(--line);padding:24px 0;color:var(--muted);text-align:center;font-size:.85rem;margin-top:30px}
+footer a{margin:0 8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head-row">
+    <a class="logo" href="#"><i>🔎</i><span>Casp<b>AI</b></span></a>
+    <span class="by">WebFixer tərəfindən · <a href="https://webfixer.space" target="_blank" rel="noopener">webfixer.space</a></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>İddianı yaz. <em>CaspAI</em> yoxlasın.</h1>
+    <p>Xəbərdə, postda və ya söhbətdə gördüyün iddianı daxil et — CaspAI onu güncəl mənbələrlə qarşılaşdırıb nəticəni mənbələri ilə birlikdə göstərir.</p>
+  </section>
+
+  <div class="panel">
+    <label for="claim">Yoxlanılacaq iddia</label>
+    <textarea id="claim" placeholder="məs: Azərbaycanda 2026-cı ildə minimum əmək haqqı 500 manata qalxıb"></textarea>
+    <div class="hint">Konkret və qısa iddialar daha dəqiq nəticə verir.</div>
+    <button class="btn" id="go">🔎 Yoxla</button>
+
+    <div class="loading" id="loading"><span class="dot"></span> CaspAI mənbələri araşdırır…</div>
+    <div class="error" id="error"></div>
+
+    <div id="result">
+      <div id="verdict" class="verdict unknown">—</div>
+      <div id="explain" class="explain"></div>
+      <div class="sources" id="sourcesBox" hidden>
+        <h3>Mənbələr</h3>
+        <ul id="sourcesList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <section class="info">
+    <h2>CaspAI nədir?</h2>
+    <div class="box">
+      <h3>Necə işləyir?</h3>
+      <p>CaspAI daxil etdiyin iddianı internetdəki güncəl mənbələrlə qarşılaşdırır və "Doğru", "Yanlış", "Qarışıq/Qismən doğru" və ya "Yoxlanıla bilmədi" nəticələrindən birini mənbələrlə birgə təqdim edir.</p>
+    </div>
+    <div class="box">
+      <h3>Diqqət</h3>
+      <p>CaspAI süni intellekt əsaslı alətdir və səhv edə bilər. Vacib qərarlar üçün mütləq orijinal mənbələri özün də yoxla.</p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    © <span id="year"></span> CaspAI · WebFixer məhsuludur
+  </div>
+</footer>
+
+<script>
+// Öz Cloudflare Worker ünvanınızla əvəz edin:
+const cold-glitter-c4a0
+
+ = "https://caspai-worker.YOUR-SUBDOMAIN.workers.dev/check";
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const $ = s => document.querySelector(s);
+const claimEl = $('#claim'), goBtn = $('#go'), loading = $('#loading'), errorBox = $('#error'),
+      result = $('#result'), verdictEl = $('#verdict'), explainEl = $('#explain'),
+      sourcesBox = $('#sourcesBox'), sourcesList = $('#sourcesList');
+
+const VERDICT_LABELS = {
+  true: ['✔ Doğru', 'true'],
+  false: ['✘ Yanlış', 'false'],
+  mixed: ['◐ Qarışıq / Qismən doğru', 'mixed'],
+  unknown: ['? Yoxlanıla bilmədi', 'unknown']
+};
+
+async function checkClaim(){
+  const claim = claimEl.value.trim();
+  if(!claim){ claimEl.focus(); return; }
+
+  goBtn.disabled = true; loading.style.display = 'flex';
+  errorBox.style.display = 'none'; result.style.display = 'none';
+
+  try{
+    const res = await fetch(cold-glitter-c4a0
+
+, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({claim})
+    });
+    if(!res.ok) throw new Error('Server xətası: ' + res.status);
+    const data = await res.json();
+
+    const [label, cls] = VERDICT_LABELS[data.verdict] || VERDICT_LABELS.unknown;
+    verdictEl.textContent = label;
+    verdictEl.className = 'verdict ' + cls;
+    explainEl.textContent = data.explanation || '';
+
+    if(data.sources && data.sources.length){
+      sourcesList.innerHTML = data.sources.map(s =>
+        `<li><a href="${s.url}" target="_blank" rel="noopener">${s.title || s.url}</a></li>`
+      ).join('');
+      sourcesBox.hidden = false;
+    } else {
+      sourcesBox.hidden = true;
+    }
+
+    result.style.display = 'block';
+  }catch(e){
+    errorBox.textContent = '⚠ ' + (e.message || 'Naməlum xəta baş verdi. Bir az sonra yenidən cəhd edin.');
+    errorBox.style.display = 'block';
+  }finally{
+    goBtn.disabled = false; loading.style.display = 'none';
+  }
+}
+
+goBtn.onclick = checkClaim;
+claimEl.addEventListener('keydown', e => { if(e.key === 'Enter' && e.ctrlKey) checkClaim(); });
+</script>
+</body>
+</html>
