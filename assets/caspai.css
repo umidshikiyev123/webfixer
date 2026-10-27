@@ -55,7 +55,7 @@ body.cai-body{margin:0;background:var(--white)}
   transition:transform .25s var(--ease),box-shadow .25s}
 .cai-hero:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.36)}
 .cai-hero img{display:block;height:50px;width:auto}
-.cai-hero-t{font-weight:700;font-size:1rem;white-space:nowrap}
+.cai-hero-t{font-weight:700;font-size:1rem;white-space:nowrap;margin-left:-8px}
 .cai-hero-t i{display:inline-block;font-style:normal;transition:transform .2s}
 .cai-hero:hover .cai-hero-t i{transform:translateX(4px)}
 .cai-hero-cap{margin-top:14px;font-size:.88rem;color:rgba(255,255,255,.82);text-align:center}
