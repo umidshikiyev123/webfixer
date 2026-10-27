@@ -9,7 +9,7 @@
    ===================================================================== */
 window.CASPAI = {
   // AdSense baxışı bitənə qədər false. Təsdiqdən sonra true et və commit et.
-  enabled: false,
+  enabled: true,
   // Düymənin altındakı qısa təsvir. Yoxlana bilməyən iddialar (məs. "ilk", "ən yaxşı") yazma.
   tagline: 'İddianı yaz, CaspAI yoxlasın'
 };
