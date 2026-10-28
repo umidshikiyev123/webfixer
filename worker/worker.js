@@ -77,6 +77,13 @@ async function limiter(env, body) {
   return r.json();
 }
 
+const FACT_PROMPT = `Sən CaspAI-san — iddiaları yoxlayan Azərbaycan dilli fakt yoxlayıcısan.
+Verilən iddianı yoxla və YALNIZ aşağıdakı formatda etibarlı JSON qaytar, başqa heç nə yazma:
+{"verdict":"DOGRUDUR|YANLISDIR|QISMEN|YOXLANA_BILMEDI","summary":"qısa izahat, 2-4 cümlə, Azərbaycan dilində","sources":[{"title":"mənbənin adı","url":"https://..."}]}
+Qaydalar:
+- Əmin deyilsənsə, verdict "YOXLANA_BILMEDI" olsun. Heç vaxt uydurma mənbə və ya link yazma. Sources boş ola bilər.
+- Nə bildiyini və ya bilmədiyini dürüst yaz. Yalnız JSON qaytar.`;
+
 function cleanMessages(raw) {
   if (!Array.isArray(raw)) return null;
   const out = [];
@@ -124,13 +131,13 @@ export default {
       return json({ enabled: true, remaining: s.remaining, limit: perIp, resetAt }, 200, origin);
     }
 
-    if (url.pathname !== '/chat' || req.method !== 'POST') return json({ error: 'Tapılmadı.' }, 404, origin);
+    if (!(url.pathname === '/chat' || url.pathname === '/check') || req.method !== 'POST') return json({ error: 'Tapılmadı.' }, 404, origin);
     // Kill switch: wrangler.toml-da AI_ENABLED = "false" yazıb deploy etsən, AI dərhal söndürülür
     if (!enabled) return json({ error: 'CaspAI hazırda təkmilləşdirilir. Tezliklə yenidən aktiv olacaq.', reason: 'disabled', remaining: 0 }, 503, origin);
     if (!env.GEMINI_API_KEY) return json({ error: 'Xidmət hələ qurulmayıb.' }, 500, origin);
 
     let payload;
-    try { payload = await req.json(); } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
+    try { const raw = await req.json(); payload = url.pathname === '/check' ? { messages: [{ role: 'user', content: String((raw && raw.claim) || '').slice(0, 1000) }] } : raw; } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
     const contents = cleanMessages(payload && payload.messages);
     if (!contents) return json({ error: 'Mesaj boşdur və ya yanlışdır.' }, 400, origin);
 
@@ -152,13 +159,16 @@ export default {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 25000);
     try {
+      const factCheck = url.pathname === '/check';
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: url.pathname === '/check' ? FACT_PROMPT : SYSTEM_PROMPT }] },
           contents,
-          generationConfig: { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
+          generationConfig: url.pathname === '/check'
+            ? { maxOutputTokens: 1200, temperature: 0.2, responseMimeType: 'application/json' }
+            : { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
         }),
         signal: ctl.signal,
       });
@@ -170,6 +180,14 @@ export default {
         res.headers.set('Retry-After', '30');
         return res;
       }
+      if (r.status === 503) {
+        // Gemini hazırda yüklənib (503): istifadəçinin hüququnu geri qaytar və 1 dəqiqə sonra yoxlamağı söylə
+        await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax, rpmMax });
+        console.error('gemini 503 (model yüklənib)');
+        const res = json({ error: 'Süni intellekt xidməti hazırda yüklənib. Zəhmət olmasa 1 dəqiqə sonra yenidən yoxlayın.', reason: 'overloaded', remaining: gate.remaining + 1, resetAt }, 503, origin);
+        res.headers.set('Retry-After', '60');
+        return res;
+      }
       if (!r.ok) throw new Error('gemini ' + r.status + ' ' + (await r.text()).slice(0, 300));
       const data = await r.json();
       const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
@@ -177,6 +195,15 @@ export default {
       if (!reply) {
         await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax });
         return json({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.', remaining: gate.remaining + 1 }, 200, origin);
+      }
+      if (url.pathname === '/check') {
+        let out;
+        try { out = JSON.parse(reply.replace(/^```(json)?|```$/g, '').trim()); } catch { out = null; }
+        if (!out || typeof out !== 'object') out = { verdict: 'YOXLANA_BILMEDI', summary: reply.slice(0, 800), sources: [] };
+        const valid = ['DOGRUDUR', 'YANLISDIR', 'QISMEN', 'YOXLANA_BILMEDI'];
+        if (!valid.includes(out.verdict)) out.verdict = 'YOXLANA_BILMEDI';
+        out.sources = Array.isArray(out.sources) ? out.sources.filter((x) => x && /^https?:\/\//.test(x.url)).slice(0, 5) : [];
+        return json({ verdict: out.verdict, summary: String(out.summary || ''), sources: out.sources, remaining: gate.remaining }, 200, origin);
       }
       return json({ reply, remaining: gate.remaining }, 200, origin);
     } catch (e) {
