@@ -169,7 +169,6 @@ export default {
           generationConfig: url.pathname === '/check'
             ? { maxOutputTokens: 1200, temperature: 0.2 }
             : { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
-          ...(url.pathname === '/check' ? { tools: [{ google_search: {} }] } : {}),
         }),
         signal: ctl.signal,
       });
