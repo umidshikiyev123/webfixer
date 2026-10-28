@@ -3,22 +3,25 @@
    - Gemini API açarı yalnız burada (secret) saxlanır, brauzerə çıxmır
    - Gündə IP başına limit + bütün sayt üçün günlük ümumi limit (büdcə qoruması)
    - Limitlər Durable Object-də atomik sayılır (pulsuz planda işləyir)
+   - CaspAI səmimi ümumi köməkçidir (dərs, idman/məşq, gündəlik suallar, söhbət) — fakt-yoxlama/axtarış yoxdur
    ===================================================================== */
 
 const ALLOWED_ORIGINS = ['https://webfixer.space', 'https://www.webfixer.space'];
 
-const SYSTEM_PROMPT = `Sən CaspAI-san — WebFixer (webfixer.space) saytının Azərbaycan dilində AI köməkçisisən. Özünü həmişə "CaspAI" adı ilə təqdim et.
-Hansı model, şirkət və ya texnologiya əsasında işlədiyin soruşulsa, bu texniki təfərrüatları paylaşmadığını nəzakətlə de və kömək etməyə davam et. Heç vaxt yalan danışma: başqa şirkət və ya model adı uydurma, "sıfırdan öyrədilmişəm" demə, insan olduğunu iddia etmə. İstifadəçi ciddi şəkildə insan, yoxsa AI olduğunu soruşsa, AI olduğunu de.
+const SYSTEM_PROMPT = `Sən CaspAI-san — WebFixer (webfixer.space) saytının səmimi Azərbaycan dilli süni intellekt dostusan. İnsanlara idman/məşq proqramlarında, dərs və mövzu izahında, gündəlik sadə suallarda (qida tərkibi, vahid çevirmə, praktik hesab və s.) kömək edirsən, sadəcə söhbət etmək istəyənlərlə də səmimi danışırsan.
+Özünü həmişə "CaspAI" adı ilə təqdim et. Hansı model, şirkət və ya texnologiya əsasında işlədiyin soruşulsa, bu texniki təfərrüatları paylaşmadığını nəzakətlə de və kömək etməyə davam et. Heç vaxt yalan danışma: başqa şirkət və ya model adı uydurma, "sıfırdan öyrədilmişəm" demə, insan olduğunu iddia etmə. İstifadəçi ciddi şəkildə insan, yoxsa AI olduğunu soruşsa, AI olduğunu de.
 Qaydalar:
-- Əsasən Azərbaycan dilində cavab ver. İstifadəçi başqa dildə yazsa, həmin dildə cavab ver.
-- Qısa, aydın və nəzakətli ol (adətən 1-3 qısa abzas). Lazım olanda qısa siyahı işlət.
-- Salamlaşma və özünü təqdim etməni yalnız istifadəçi salam yazanda et. Digər hallarda birbaşa sualı cavabla.
+- Əsasən Azərbaycan dilində, isti və səmimi (dost kimi, amma hörmətli) tonda yaz. İstifadəçi başqa dildə yazsa, həmin dildə cavab ver.
+- Salamlaşma və özünü təqdim etməni yalnız istifadəçi salam yazanda, bir dəfə et — hər dəfə eyni cümləni təkrarlama, təbii və fərqli sözlərlə yaz. Digər hallarda birbaşa mövzuya keç.
+- Sualın növünə uyğunlaş: idman/məşq sualına real və səviyyəyə uyğun proqram (gün-gün, set/təkrar) ver; dərs/mövzu sualını sadə dildə, nümunə ilə izah et; gündəlik sadə fakt sualına (qida tərkibi, vahid çevirmə və s.) birbaşa, dəqiq cavab ver; sadəcə söhbətə təbii və maraqla cavab ver.
+- Son günlərin/ayların hadisələrini (məs. güncəl idman nəticələri, xəbərlər) dəqiq bilməyə bilərsən — belə olanda bunu açıq de, uydurma cavab vermə.
+- Qısa-orta uzunluqda yaz (adətən 1-4 abzas); məşq proqramı kimi strukturlu cavablarda siyahı/nömrələmə işlət.
 - Format: LaTeX və $...$ işlətmə, başlıq (#) və cədvəl işlətmə. Düsturları adi mətnlə yaz, məsələn: v = v₀ + a·t, s = v₀·t + a·t²/2, v² − v₀² = 2·a·s. Qalın üçün yalnız **...**, siyahı üçün "- " və ya "1." işlət.
 - Bilmədiyin şeyi bilmədiyini de, fakt və mənbə uydurma.
 - Parol, kart nömrəsi, ünvan, şəxsi sənəd məlumatı istəmə. İstifadəçi belə məlumat yazsa, bunu etməməyi nəzakətlə xatırlat.
-- Tibbi, hüquqi və maliyyə mövzularında ehtiyatlı ol, ümumi məlumat ver və mütəxəssisə müraciəti tövsiyə et.
+- Tibbi (o cümlədən məşq/qida), hüquqi və maliyyə mövzularında ehtiyatlı ol, ümumi məlumat ver və ciddi hallarda mütəxəssisə müraciəti tövsiyə et.
 - Zərərli, qeyri-qanuni, 18+ və ya nifrət məzmunlu istəklərdən nəzakətlə imtina et.
-- Uyğun olanda WebFixer alətlərini (QR kod, parol generatoru, şəkil ölçüsü, faiz hesablayıcı, yaş hesablayıcı, mətn alətləri və s.) tövsiyə et.`;
+- Uyğun olanda WebFixer alətlərini (BMI hesablayıcı, pomodoro taymer, GPA hesablayıcı, yaş hesablayıcı, mətn alətləri və s.) tövsiyə et.`;
 
 const MAX_MESSAGES = 6;      // modelə göndərilən son mesaj sayı (xərcə qənaət)
 const MAX_USER_CHARS = 500;  // bir mesajın maksimum uzunluğu
@@ -77,13 +80,6 @@ async function limiter(env, body) {
   return r.json();
 }
 
-const FACT_PROMPT = `Sən CaspAI-san — iddiaları yoxlayan Azərbaycan dilli fakt yoxlayıcısan.
-Verilən iddianı yoxla və YALNIZ aşağıdakı formatda etibarlı JSON qaytar, başqa heç nə yazma:
-{"verdict":"DOGRUDUR|YANLISDIR|QISMEN|YOXLANA_BILMEDI","summary":"qısa izahat, 2-4 cümlə, Azərbaycan dilində","sources":[{"title":"mənbənin adı","url":"https://..."}]}
-Qaydalar:
-- Əmin deyilsənsə, verdict "YOXLANA_BILMEDI" olsun. Heç vaxt uydurma mənbə və ya link yazma. Sources boş ola bilər.
-- Nə bildiyini və ya bilmədiyini dürüst yaz. Yalnız JSON qaytar.`;
-
 function cleanMessages(raw) {
   if (!Array.isArray(raw)) return null;
   const out = [];
@@ -131,13 +127,13 @@ export default {
       return json({ enabled: true, remaining: s.remaining, limit: perIp, resetAt }, 200, origin);
     }
 
-    if (!(url.pathname === '/chat' || url.pathname === '/check') || req.method !== 'POST') return json({ error: 'Tapılmadı.' }, 404, origin);
+    if (url.pathname !== '/chat' || req.method !== 'POST') return json({ error: 'Tapılmadı.' }, 404, origin);
     // Kill switch: wrangler.toml-da AI_ENABLED = "false" yazıb deploy etsən, AI dərhal söndürülür
     if (!enabled) return json({ error: 'CaspAI hazırda təkmilləşdirilir. Tezliklə yenidən aktiv olacaq.', reason: 'disabled', remaining: 0 }, 503, origin);
     if (!env.GEMINI_API_KEY) return json({ error: 'Xidmət hələ qurulmayıb.' }, 500, origin);
 
     let payload;
-    try { const raw = await req.json(); payload = url.pathname === '/check' ? { messages: [{ role: 'user', content: String((raw && raw.claim) || '').slice(0, 1000) }] } : raw; } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
+    try { payload = await req.json(); } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
     const contents = cleanMessages(payload && payload.messages);
     if (!contents) return json({ error: 'Mesaj boşdur və ya yanlışdır.' }, 400, origin);
 
@@ -159,16 +155,13 @@ export default {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 25000);
     try {
-      const factCheck = url.pathname === '/check';
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: url.pathname === '/check' ? FACT_PROMPT : SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
-          generationConfig: url.pathname === '/check'
-            ? { maxOutputTokens: 1200, temperature: 0.2 }
-            : { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
+          generationConfig: { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
         }),
         signal: ctl.signal,
       });
@@ -195,18 +188,6 @@ export default {
       if (!reply) {
         await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax });
         return json({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.', remaining: gate.remaining + 1 }, 200, origin);
-      }
-      if (url.pathname === '/check') {
-        const grounding = (data.candidates && data.candidates[0] && data.candidates[0].groundingMetadata && data.candidates[0].groundingMetadata.groundingChunks) || [];
-        const liveSources = grounding.map((g) => g.web).filter((w) => w && /^https?:\/\//.test(w.uri || '')).map((w) => ({ title: w.title || w.uri, url: w.uri }));
-        let out;
-        try { out = JSON.parse(reply.replace(/^```(json)?|```$/g, '').trim()); } catch { out = null; }
-        if (!out || typeof out !== 'object') out = { verdict: 'YOXLANA_BILMEDI', summary: reply.slice(0, 800), sources: [] };
-        const valid = ['DOGRUDUR', 'YANLISDIR', 'QISMEN', 'YOXLANA_BILMEDI'];
-        if (!valid.includes(out.verdict)) out.verdict = 'YOXLANA_BILMEDI';
-        const modelSources = Array.isArray(out.sources) ? out.sources.filter((x) => x && /^https?:\/\//.test(x.url)) : [];
-        out.sources = (liveSources.length ? liveSources : modelSources).slice(0, 5);
-        return json({ verdict: out.verdict, summary: String(out.summary || ''), sources: out.sources, remaining: gate.remaining }, 200, origin);
       }
       return json({ reply, remaining: gate.remaining }, 200, origin);
     } catch (e) {

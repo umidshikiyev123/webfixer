@@ -2,9 +2,9 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CaspAI — Fakt Yoxlayıcı | WebFixer</title>
-<meta name="description" content="CaspAI: iddianı yazın, süni intellekt onu yoxlasın, nəticəni izah etsin və mənbələri göstərsin.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CaspAI — Süni İntellekt Dostun | WebFixer</title>
+<meta name="description" content="CaspAI ilə danış: idman məşq proqramından dərs izahına, gündəlik sadə suallara qədər — səmimi süni intellekt köməkçin.">
 <meta name="theme-color" content="#0b2a5b">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://webfixer.space/caspai/">
@@ -15,283 +15,151 @@
 <link rel="preload" href="/assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/caspai.css">
 <script>document.documentElement.className+=' js'</script>
 <script>try{var t=localStorage.getItem('wf-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
-<style>
-/* ---------- CaspAI səhifəsinə məxsus üslublar (sayt dəyişənlərindən istifadə edir) ---------- */
-.cp-hero{position:relative;overflow:hidden;color:#fff;
-  background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 55%,var(--navy-2) 100%)}
-.cp-hero .wrap{position:relative;z-index:2;max-width:860px;padding-top:54px;padding-bottom:120px;text-align:center}
-.cp-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#bcd2fb;
-  border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 14px;margin-bottom:18px}
-.cp-eyebrow i{width:7px;height:7px;border-radius:50%;background:#7fb0ff;animation:cpPulse 2s ease-in-out infinite}
-.cp-hero h1{color:#fff;font-size:clamp(2rem,5vw,3.2rem);line-height:1.12}
-.cp-hero h1 em{font-style:italic;color:#9ec1ff}
-.cp-hero p.lead{max-width:600px;margin:14px auto 0;color:#cfdcf5;font-size:1.05rem}
-
-/* hero-nun altında dalğalar: həmişə yavaş axır, yoxlama zamanı sürətlənir */
-.cp-waves{position:absolute;left:0;right:0;bottom:-1px;height:110px;z-index:1;pointer-events:none}
-.cp-waves svg{position:absolute;left:0;bottom:0;width:200%;height:100%;animation:cpFlow 22s linear infinite}
-.cp-waves svg:nth-child(2){animation-duration:15s;animation-direction:reverse}
-.cp-waves svg:nth-child(3){animation-duration:30s}
-.cp-waves path.w1{fill:var(--white)}
-.cp-waves path.w2{fill:rgba(158,193,255,.28)}
-.cp-waves path.w3{fill:rgba(255,255,255,.16)}
-body.cp-busy .cp-waves svg{animation-duration:6s}
-body.cp-busy .cp-waves svg:nth-child(2){animation-duration:4.2s}
-body.cp-busy .cp-waves svg:nth-child(3){animation-duration:8s}
-body.cp-busy .cp-waves{height:150px;transition:height .6s var(--ease)}
-.cp-waves{transition:height .6s var(--ease)}
-
-/* əsas panel */
-.cp-main{max-width:860px;margin:-64px auto 0;position:relative;z-index:3;padding:0 20px 56px}
-.cp-panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
-.cp-label{display:block;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.cp-ta{width:100%;min-height:130px;resize:vertical;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:12px;
-  padding:14px 16px;font-family:var(--sans);font-size:1rem;line-height:1.55;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
-.cp-ta:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.14);background:var(--surface)}
-.cp-ta:disabled{opacity:.7}
-.cp-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
-.cp-count{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.cp-btn{position:relative;overflow:hidden;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:600;
-  border:1px solid var(--navy);border-radius:10px;padding:12px 26px;transition:background .2s,transform .2s,box-shadow .2s}
-.cp-btn:hover{background:var(--navy-2);transform:translateY(-2px);box-shadow:0 8px 18px rgba(11,42,91,.22)}
-.cp-btn:active{transform:translateY(0)}
-.cp-btn:disabled{cursor:wait;transform:none;box-shadow:none;opacity:.85}
-.cp-btn .dots{display:none;gap:3px}
-.cp-btn.busy .dots{display:inline-flex}
-.cp-btn .dots b{width:6px;height:6px;border-radius:50%;background:#fff;animation:cpDot 1s ease-in-out infinite}
-.cp-btn .dots b:nth-child(2){animation-delay:.15s}
-.cp-btn .dots b:nth-child(3){animation-delay:.3s}
-.cp-chips{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
-.cp-chip{cursor:pointer;font-family:inherit;font-size:.88rem;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:999px;
-  padding:7px 14px;transition:background .2s,border-color .2s,transform .2s}
-.cp-chip:hover{background:var(--sky);border-color:var(--blue);transform:translateY(-1px)}
-
-/* nəticə sahəsi */
-#cpOut{margin-top:22px;min-height:0}
-
-/* yoxlama paneli: arxa fonda axan dalğalar */
-.cp-scan{position:relative;overflow:hidden;border-radius:16px;min-height:190px;color:#fff;display:grid;place-items:center;text-align:center;padding:30px 20px;
-  background:linear-gradient(160deg,var(--navy-dark),var(--navy) 60%,var(--navy-2));box-shadow:var(--shadow);animation:cpIn .45s var(--ease) both}
-.cp-scan .sw{position:absolute;left:0;bottom:0;width:100%;height:100%;pointer-events:none}
-.cp-scan .sw svg{position:absolute;left:0;bottom:0;width:200%;height:70%;animation:cpFlow 5s linear infinite}
-.cp-scan .sw svg:nth-child(2){height:55%;animation-duration:7.5s;animation-direction:reverse;opacity:.7}
-.cp-scan .sw svg:nth-child(3){height:42%;animation-duration:11s;opacity:.5}
-.cp-scan .sw path{fill:rgba(158,193,255,.22)}
-.cp-scan .sw svg:nth-child(2) path{fill:rgba(96,165,250,.22)}
-.cp-scan .sw svg:nth-child(3) path{fill:rgba(255,255,255,.14)}
-.cp-scan .in{position:relative;z-index:2}
-.cp-lens{display:inline-grid;place-items:center;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.3);font-size:1.5rem;animation:cpSweep 2.4s ease-in-out infinite}
-.cp-scan h3{color:#fff;font-size:1.25rem;margin-top:12px}
-.cp-scan p{color:#cfdcf5;font-size:.95rem;margin-top:4px;min-height:1.5em;transition:opacity .3s}
-
-/* nəticə kartı */
-.cp-res{background:var(--surface);border:1px solid var(--line);border-left-width:5px;border-radius:14px;padding:20px 22px;box-shadow:var(--shadow-sm);animation:cpIn .5s var(--ease) both}
-.cp-res.v-DOGRUDUR{border-left-color:#16a34a}
-.cp-res.v-YANLISDIR{border-left-color:#dc2626}
-.cp-res.v-QISMEN{border-left-color:#d97706}
-.cp-res.v-YOXLANA_BILMEDI{border-left-color:#7a8aa8}
-.cp-res.err{border-left-color:#dc2626}
-.cp-badge{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:.82rem;letter-spacing:.05em;padding:6px 12px;border-radius:999px;margin-bottom:12px}
-.v-DOGRUDUR .cp-badge{background:#dcfce7;color:#166534}
-.v-YANLISDIR .cp-badge{background:#fee2e2;color:#991b1b}
-.v-QISMEN .cp-badge{background:#fef3c7;color:#92400e}
-.v-YOXLANA_BILMEDI .cp-badge{background:var(--sky);color:var(--muted)}
-.err .cp-badge{background:#fee2e2;color:#991b1b}
-[data-theme="dark"] .v-DOGRUDUR .cp-badge{background:#0f3a24;color:#86efac}
-[data-theme="dark"] .v-YANLISDIR .cp-badge,[data-theme="dark"] .err .cp-badge{background:#451a1a;color:#fca5a5}
-[data-theme="dark"] .v-QISMEN .cp-badge{background:#422a0a;color:#fcd34d}
-.cp-res p{color:var(--ink);font-size:1.02rem}
-.cp-res h3{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;font-family:var(--sans);font-weight:600}
-.cp-src{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0}
-.cp-src a{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;font-size:.88rem;
-  background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 13px;transition:background .2s,border-color .2s,transform .2s}
-.cp-src a:hover{background:var(--sky);border-color:var(--blue);transform:translateY(-1px)}
-.cp-note{margin-top:20px;color:var(--muted);font-size:.85rem;text-align:center}
-
-@keyframes cpFlow{to{transform:translateX(-50%)}}
-@keyframes cpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes cpPulse{50%{opacity:.35;transform:scale(.8)}}
-@keyframes cpDot{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-4px);opacity:1}}
-@keyframes cpSweep{0%,100%{transform:translate(-8px,0) rotate(-6deg)}50%{transform:translate(8px,-4px) rotate(6deg)}}
-@media(max-width:600px){.cp-panel{padding:18px}.cp-hero .wrap{padding-top:40px;padding-bottom:104px}.cp-btn{width:100%;justify-content:center}}
-@media(prefers-reduced-motion:reduce){
-  .cp-waves svg,.cp-scan .sw svg,.cp-lens,.cp-eyebrow i,.cp-btn .dots b{animation:none!important}
-  .cp-res,.cp-scan{animation:none!important}
-}
-</style>
 </head>
-<body>
-<div class="progress" aria-hidden="true"></div>
-<a class="skip" href="#main">Əsas məzmuna keç</a>
+<body class="cai-body">
 
-<header class="site-header">
-<div class="wrap head-row">
-<a class="logo" href="/" aria-label="WebFixer ana səhifə"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>
-<button class="nav-toggle" aria-label="Menyu" aria-expanded="false">☰</button>
-<nav class="nav" aria-label="Əsas menyu">
-<a href="/">Ana səhifə</a>
-<a href="/#tools">Alətlər</a>
-<a href="/caspai/" class="on">CaspAI</a>
-<a href="/haqqinda.html">Haqqında</a>
-<a href="/contact.html">Əlaqə</a>
-</nav>
-</div>
-</header>
-
-<main id="main">
-<section class="cp-hero">
-  <div class="wrap">
-    <span class="cp-eyebrow"><i></i>CaspAI · Fakt yoxlayıcı</span>
-    <h1>İddianı yaz. <em>Yoxlayaq.</em></h1>
-    <p class="lead">CaspAI iddianı araşdırır, nəticəni izah edir və mümkün olduqda mənbələri göstərir.</p>
-  </div>
-  <div class="cp-waves" aria-hidden="true">
-    <svg viewBox="0 0 1200 110" preserveAspectRatio="none"><path class="w3" d="M0 50 Q150 15 300 50 T600 50 T900 50 T1200 50 V110 H0Z"/></svg>
-    <svg viewBox="0 0 1200 110" preserveAspectRatio="none"><path class="w2" d="M0 62 Q150 30 300 62 T600 62 T900 62 T1200 62 V110 H0Z"/></svg>
-    <svg viewBox="0 0 1200 110" preserveAspectRatio="none"><path class="w1" d="M0 78 Q150 52 300 78 T600 78 T900 78 T1200 78 V110 H0Z"/></svg>
-  </div>
-</section>
-
-<div class="cp-main">
-  <section class="cp-panel reveal" aria-labelledby="cpLbl">
-    <label class="cp-label" id="cpLbl" for="claim">İddia və ya xəbər</label>
-    <textarea class="cp-ta" id="claim" maxlength="600" placeholder="məs: Xəzər dənizi dünyanın ən böyük gölüdür"></textarea>
-    <div class="cp-row">
-      <span class="cp-count" id="count">0 / 600</span>
-      <button class="cp-btn" id="go" type="button"><span id="goTxt">Yoxla</span><span class="dots" aria-hidden="true"><b></b><b></b><b></b></span></button>
+<div class="cai-app">
+  <div class="cai-bar">
+    <div class="cai-bar-in">
+      <a class="cai-back" href="/">← WebFixer</a>
+      <div class="cai-logo">Casp<b>AI</b></div>
+      <div class="cai-left" id="remain" hidden></div>
     </div>
-    <div class="cp-chips">
-      <button class="cp-chip" type="button">Xəzər dənizi dünyanın ən böyük gölüdür</button>
-      <button class="cp-chip" type="button">İnsanlar beyinlərinin yalnız 10%-ni istifadə edir</button>
+  </div>
+
+  <div class="cai-log" id="log">
+    <div class="cai-log-in" id="logIn">
+      <div class="cai-msg ai">Salam! Mən CaspAI-yam 👋 İdman/məşq proqramından dərs izahına, gündəlik sadə suallara qədər — nə lazımdırsa soruş, danışaq.</div>
+      <div class="cai-sugg" id="sugg">
+        <button type="button" data-q="Başlanğıc səviyyə üçün evdə edilə bilən 3 günlük məşq proqramı ver">Ev məşq proqramı ver</button>
+        <button type="button" data-q="Pifaqor teoremini sadə, nümunə ilə izah et">Pifaqor teoremini izah et</button>
+        <button type="button" data-q="200 qram pendirdə təxminən neçə qram protein olur?">200q pendirdə protein nə qədərdir?</button>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <div id="cpOut" aria-live="polite"></div>
-
-  <p class="cp-note">CaspAI süni intellektdən istifadə edir və səhv edə bilər. Vacib məsələlərdə mənbələrə özünüz baxın.</p>
+  <div class="cai-foot">
+    <div class="cai-foot-in">
+      <form class="cai-form" id="form">
+        <textarea id="input" maxlength="500" rows="1" placeholder="Mesaj yaz..." aria-label="Mesaj"></textarea>
+        <button class="cai-send" id="send" type="submit" aria-label="Göndər">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
+        </button>
+      </form>
+      <p class="cai-note">CaspAI süni intellektdən istifadə edir və səhv edə bilər. Tibbi, hüquqi və maliyyə qərarlarında mütəxəssisə müraciət edin.</p>
+    </div>
+  </div>
 </div>
-</main>
 
-<footer class="site-footer">
-<div class="wrap">
-<div class="foot" style="grid-template-columns:1.4fr 1fr">
-<div><a class="logo" href="/"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b2a5b"/><path d="M22 7 12 22h7l-2 11 11-16h-7z" fill="#fff"/></svg><span>Web<b>Fixer</b></span></a>
-<p>Gündəlik işlər üçün pulsuz, qeydiyyatsız və təhlükəsiz onlayn alətlər.</p></div>
-<div><h4>Məlumat</h4><a href="/haqqinda.html">Haqqında</a><a href="/privacy.html">Məxfilik siyasəti</a><a href="/terms.html">İstifadə şərtləri</a><a href="/contact.html">Əlaqə</a></div>
-</div>
-<div class="copy">© <span id="year">2026</span> WebFixer · Bütün hüquqlar qorunur</div>
-</div>
-</footer>
-<button class="to-top" aria-label="Yuxarı qalx">↑</button>
-
-<script src="/assets/site.js"></script>
 <script>
-// Cloudflare Worker ünvanı (sonda /check ilə)
-const WORKER_URL = 'https://cold-glitter-c4a0.denemeclaude490.workers.dev/check';
-
-const LABELS = {
-  DOGRUDUR: '✓ Doğrudur',
-  YANLISDIR: '✗ Yanlışdır',
-  QISMEN: '≈ Qismən doğrudur',
-  YOXLANA_BILMEDI: '? Yoxlana bilmədi'
-};
-const STEPS = ['İddia oxunur…', 'Məlumat axtarılır…', 'Mənbələr müqayisə olunur…', 'Nəticə hazırlanır…'];
-
+const WORKER_BASE = 'https://cold-glitter-c4a0.denemeclaude490.workers.dev';
 const $ = s => document.querySelector(s);
-const claim = $('#claim'), go = $('#go'), goTxt = $('#goTxt'), out = $('#cpOut');
-let stepTimer = null;
+const log = $('#log'), logIn = $('#logIn'), form = $('#form'), input = $('#input'), send = $('#send'), sugg = $('#sugg'), remainEl = $('#remain');
 
-claim.addEventListener('input', () => { $('#count').textContent = claim.value.length + ' / 600'; });
-document.querySelectorAll('.cp-chip').forEach(c => c.addEventListener('click', () => {
-  claim.value = c.textContent; claim.dispatchEvent(new Event('input')); claim.focus();
-}));
-claim.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) go.click(); });
+let history = []; // {role:'user'|'assistant', content}
+let busy = false;
 
-const WAVE = '<svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0 40 Q150 5 300 40 T600 40 T900 40 T1200 40 V100 H0Z"/></svg>';
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
-function showScan() {
-  out.innerHTML = '<div class="cp-scan" role="status"><div class="sw">' + WAVE + WAVE + WAVE + '</div>' +
-    '<div class="in"><span class="cp-lens" aria-hidden="true">🔎</span><h3>Yoxlanılır</h3><p id="cpStep">' + STEPS[0] + '</p></div></div>';
-  let i = 0;
-  const p = $('#cpStep');
-  clearInterval(stepTimer);
-  stepTimer = setInterval(() => {
-    i = (i + 1) % STEPS.length;
-    if (!p) return;
-    p.style.opacity = 0;
-    setTimeout(() => { p.textContent = STEPS[i]; p.style.opacity = 1; }, 250);
-  }, 2200);
+// **qalın** -> <strong>, sətirlər qorunur (CSS: white-space:pre-wrap)
+function formatReply(text) {
+  return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function scrollDown() {
+  log.scrollTop = log.scrollHeight;
+}
+
+function addMsg(role, text, extraClass) {
+  const d = document.createElement('div');
+  d.className = 'cai-msg ' + (role === 'user' ? 'me' : 'ai') + (extraClass ? ' ' + extraClass : '');
+  if (role === 'user') d.textContent = text; else d.innerHTML = formatReply(text);
+  logIn.appendChild(d);
+  scrollDown();
+  return d;
 }
 
 function setBusy(b) {
-  document.body.classList.toggle('cp-busy', b);
-  go.disabled = b; claim.disabled = b;
-  go.classList.toggle('busy', b);
-  goTxt.textContent = b ? 'Yoxlanılır' : 'Yoxla';
-  if (!b) clearInterval(stepTimer);
+  busy = b;
+  send.disabled = b;
+  input.disabled = b;
 }
 
-function showError(msg) {
-  out.innerHTML = '';
-  const d = document.createElement('div'); d.className = 'cp-res err';
-  const b = document.createElement('span'); b.className = 'cp-badge'; b.textContent = '! Xəta';
-  const p = document.createElement('p'); p.textContent = msg;
-  d.append(b, p); out.appendChild(d);
+function autoResize() {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+}
+input.addEventListener('input', autoResize);
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+});
+
+sugg.addEventListener('click', e => {
+  const b = e.target.closest('button[data-q]');
+  if (!b || busy) return;
+  input.value = b.dataset.q;
+  form.requestSubmit();
+});
+
+function hideSugg() { sugg.hidden = true; }
+
+function showRemain(n) {
+  if (n == null) return;
+  remainEl.hidden = false;
+  remainEl.textContent = n > 0 ? `Bu gün: ${n} mesaj qaldı` : 'Bu günlük limit bitdi';
+  remainEl.classList.toggle('zero', n <= 0);
 }
 
-function showResult(r) {
-  out.innerHTML = '';
-  const v = LABELS[r.verdict] ? r.verdict : 'YOXLANA_BILMEDI';
-  const card = document.createElement('div'); card.className = 'cp-res v-' + v;
-  const b = document.createElement('span'); b.className = 'cp-badge'; b.textContent = LABELS[v];
-  const p = document.createElement('p'); p.textContent = r.summary || '';
-  card.append(b, p);
-  const list = (r.sources || []).filter(s => /^https?:\/\//.test(s.url));
-  if (list.length) {
-    const h = document.createElement('h3'); h.textContent = 'Mənbələr';
-    const ul = document.createElement('ul'); ul.className = 'cp-src';
-    list.forEach(s => {
-      const li = document.createElement('li'), a = document.createElement('a');
-      a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = s.title || s.url;
-      li.appendChild(a); ul.appendChild(li);
+async function loadStatus() {
+  try {
+    const res = await fetch(WORKER_BASE + '/status');
+    const data = await res.json().catch(() => null);
+    if (data && typeof data.remaining === 'number') showRemain(data.remaining);
+  } catch (e) { /* səssiz keç, status göstərici dekorativdir */ }
+}
+loadStatus();
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (busy) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  hideSugg();
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  input.value = '';
+  autoResize();
+  setBusy(true);
+  const wait = addMsg('ai', 'CaspAI yazır…', 'wait');
+
+  try {
+    const res = await fetch(WORKER_BASE + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history.slice(-12) }),
     });
-    card.append(h, ul);
-  }
-  out.appendChild(card);
-}
-
-go.addEventListener('click', async () => {
-  const text = claim.value.trim();
-  if (text.length < 5) { showError('İddia çox qısadır. Ən azı bir cümlə yazın.'); return; }
-  setBusy(true); showScan();
-  out.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  const t0 = Date.now();
-  let result = null, errMsg = null;
-  for (let attempt = 0; attempt < 2 && !result && !errMsg; attempt++) {
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ claim: text })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) errMsg = data.error || ('Xəta: ' + res.status);
-      else result = data;
-    } catch (e) {
-      // şəbəkə xətası: bir dəfə avtomatik təkrar yoxla
-      if (attempt === 0) await new Promise(r => setTimeout(r, 1200));
-      else errMsg = 'Serverə qoşulmaq olmadı. Səhifəni yeniləyib yenidən cəhd edin. Reklam bloklayıcı, VPN və ya xüsusi DNS işlədirsinizsə, söndürüb yoxlayın.';
+    const data = await res.json().catch(() => ({}));
+    wait.remove();
+    if (!res.ok || data.error) {
+      addMsg('ai', data.error || ('Xəta: ' + res.status), 'err');
+    } else {
+      addMsg('ai', data.reply || '...');
+      history.push({ role: 'assistant', content: data.reply || '' });
     }
+    if (typeof data.remaining === 'number') showRemain(data.remaining);
+  } catch (err) {
+    wait.remove();
+    addMsg('ai', 'Serverə qoşulmaq olmadı. İnternet bağlantınızı yoxlayıb yenidən yazın.', 'err');
+  } finally {
+    setBusy(false);
+    input.focus();
   }
-  // animasiya ən azı 1.2 san görünsün ki, sürətli cavabda yanıb-sönmə olmasın
-  const wait = 1200 - (Date.now() - t0);
-  if (wait > 0) await new Promise(r => setTimeout(r, wait));
-  setBusy(false);
-  if (errMsg) showError(errMsg); else showResult(result);
-  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
 </script>
 </body>
