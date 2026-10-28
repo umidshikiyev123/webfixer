@@ -40,7 +40,7 @@ window.CASPAI = {
     k.className = 'card reveal'; k.style.setProperty('--d', '0ms'); k.href = '/caspai/';
     k.setAttribute('data-cat', 'ai');
     k.setAttribute('data-s', 'caspai fakt yoxlayıcı iddia xəbər doğrudur yanlışdır ai süni intellekt');
-    k.innerHTML = '<span class="new">YENİ</span><div class="ico">🤖</div><span class="tag">🤖 AI</span>' +
+    k.innerHTML = '<div class="ico">🤖</div><span class="tag">🤖 AI</span>' +
       '<h3>CaspAI</h3><p>İddianı yaz, süni intellekt yoxlasın, nəticəni izah etsin və mənbələri göstərsin.</p>' +
       '<span class="go">Sına <i>→</i></span>';
     grid.insertBefore(k, grid.firstChild);
