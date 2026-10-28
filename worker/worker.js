@@ -167,8 +167,9 @@ export default {
           systemInstruction: { parts: [{ text: url.pathname === '/check' ? FACT_PROMPT : SYSTEM_PROMPT }] },
           contents,
           generationConfig: url.pathname === '/check'
-            ? { maxOutputTokens: 1200, temperature: 0.2, responseMimeType: 'application/json' }
+            ? { maxOutputTokens: 1200, temperature: 0.2 }
             : { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
+          ...(url.pathname === '/check' ? { tools: [{ google_search: {} }] } : {}),
         }),
         signal: ctl.signal,
       });
@@ -197,12 +198,15 @@ export default {
         return json({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.', remaining: gate.remaining + 1 }, 200, origin);
       }
       if (url.pathname === '/check') {
+        const grounding = (data.candidates && data.candidates[0] && data.candidates[0].groundingMetadata && data.candidates[0].groundingMetadata.groundingChunks) || [];
+        const liveSources = grounding.map((g) => g.web).filter((w) => w && /^https?:\/\//.test(w.uri || '')).map((w) => ({ title: w.title || w.uri, url: w.uri }));
         let out;
         try { out = JSON.parse(reply.replace(/^```(json)?|```$/g, '').trim()); } catch { out = null; }
         if (!out || typeof out !== 'object') out = { verdict: 'YOXLANA_BILMEDI', summary: reply.slice(0, 800), sources: [] };
         const valid = ['DOGRUDUR', 'YANLISDIR', 'QISMEN', 'YOXLANA_BILMEDI'];
         if (!valid.includes(out.verdict)) out.verdict = 'YOXLANA_BILMEDI';
-        out.sources = Array.isArray(out.sources) ? out.sources.filter((x) => x && /^https?:\/\//.test(x.url)).slice(0, 5) : [];
+        const modelSources = Array.isArray(out.sources) ? out.sources.filter((x) => x && /^https?:\/\//.test(x.url)) : [];
+        out.sources = (liveSources.length ? liveSources : modelSources).slice(0, 5);
         return json({ verdict: out.verdict, summary: String(out.summary || ''), sources: out.sources, remaining: gate.remaining }, 200, origin);
       }
       return json({ reply, remaining: gate.remaining }, 200, origin);
