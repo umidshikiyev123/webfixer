@@ -206,21 +206,41 @@ export default {
       const encoder = new TextEncoder();
       let buffer = '';
       let fullText = '';
+      let upstreamErr = null;
+      let sawAnyEvent = false;
 
       const stream = new ReadableStream({
         async pull(controller) {
           while (true) {
             const { done, value } = await upstream.read();
             if (done) {
+              // Oxunub bitməyən qalıq var — son hadisə bufferdə qalmış ola bilər (ayırıcı gəlməyib deyə)
+              if (buffer.trim()) {
+                const line = buffer.split('\n').find((l) => l.startsWith('data:'));
+                if (line) {
+                  try {
+                    const obj = JSON.parse(line.slice(5).trim());
+                    const cparts = (obj.candidates && obj.candidates[0] && obj.candidates[0].content && obj.candidates[0].content.parts) || [];
+                    const text = cparts.map((p) => p.text || '').join('');
+                    if (text) { fullText += text; controller.enqueue(encoder.encode('data: ' + JSON.stringify({ delta: text }) + '\n\n')); }
+                    if (obj.error) upstreamErr = obj.error.message || JSON.stringify(obj.error);
+                  } catch { /* yarımçıq JSON, keç */ }
+                }
+              }
               if (!fullText.trim()) {
                 await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax, rpmMax });
-                controller.enqueue(encoder.encode('data: ' + JSON.stringify({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.' }) + '\n\n'));
+                console.error('caspai: boş cavab. sawAnyEvent=' + sawAnyEvent + ' upstreamErr=' + upstreamErr);
+                const msg = upstreamErr
+                  ? 'Süni intellekt xidmətindən xəta gəldi: ' + upstreamErr
+                  : 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.';
+                controller.enqueue(encoder.encode('data: ' + JSON.stringify({ error: msg }) + '\n\n'));
               }
               controller.enqueue(encoder.encode('data: ' + JSON.stringify({ done: true, remaining: gate.remaining }) + '\n\n'));
               controller.close();
               return;
             }
-            buffer += decoder.decode(value, { stream: true });
+            // Google-un SSE ayırıcısı bəzən CRLF (\r\n\r\n) ola bilir — LF-ə normallaşdırırıq ki, "\n\n" axtarışı həmişə tutsun
+            buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
             let idx;
             let emitted = false;
             while ((idx = buffer.indexOf('\n\n')) !== -1) {
@@ -230,8 +250,10 @@ export default {
               if (!line) continue;
               const jsonStr = line.slice(5).trim();
               if (!jsonStr) continue;
+              sawAnyEvent = true;
               let obj;
               try { obj = JSON.parse(jsonStr); } catch { continue; }
+              if (obj.error) { upstreamErr = obj.error.message || JSON.stringify(obj.error); continue; }
               const cparts = (obj.candidates && obj.candidates[0] && obj.candidates[0].content && obj.candidates[0].content.parts) || [];
               const text = cparts.map((p) => p.text || '').join('');
               if (text) {
