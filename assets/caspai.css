@@ -22,6 +22,10 @@ body.cai-body{margin:0;background:var(--white)}
 .cai-msg.me{align-self:flex-end;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;border-bottom-right-radius:6px}
 .cai-msg.wait{color:var(--muted);font-style:italic}
 .cai-msg.err{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+/* axın (streaming) zamanı yanıb-sönən kursor — ChatGPT/Claude kimi "yazır" hissi */
+.cai-caret{display:inline-block;width:2px;height:1em;margin-left:1px;vertical-align:text-bottom;background:currentColor;animation:caiBlink .9s steps(1) infinite}
+@keyframes caiBlink{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cai-caret{animation:none}}
 .cai-sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .cai-sugg[hidden]{display:none}
 .cai-sugg button{cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:8px 14px;font-size:.86rem;transition:background .2s,border-color .2s}

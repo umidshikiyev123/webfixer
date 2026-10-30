@@ -152,16 +152,19 @@ export default {
     }
 
     const model = env.MODEL || 'gemini-3.1-flash-lite';
+    // Bu timer yalnız Gemini-ə QOŞULMA mərhələsini (ilk başlıqlar gələnə qədər) məhdudlaşdırır.
+    // Axın (stream) başlayandan sonra təmizlənir ki, uzun cavablar yarımçıq kəsilməsin.
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 25000);
+    let connected = false;
     try {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
-          generationConfig: { maxOutputTokens: num(env.MAX_OUTPUT, 600), temperature: 0.7 },
+          generationConfig: { maxOutputTokens: num(env.MAX_OUTPUT, 1536), temperature: 0.7 },
         }),
         signal: ctl.signal,
       });
@@ -181,17 +184,64 @@ export default {
         res.headers.set('Retry-After', '60');
         return res;
       }
-      if (!r.ok) throw new Error('gemini ' + r.status + ' ' + (await r.text()).slice(0, 300));
-      const data = await r.json();
-      const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-      const reply = parts.map((p) => p.text || '').join('').trim();
-      if (!reply) {
-        await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax });
-        return json({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.', remaining: gate.remaining + 1 }, 200, origin);
-      }
-      return json({ reply, remaining: gate.remaining }, 200, origin);
+      if (!r.ok || !r.body) throw new Error('gemini ' + r.status + ' ' + (await r.text()).slice(0, 300));
+
+      // Başlıqlar gəldi, bağlantı quruldu — artıq qoşulma timerini saxlamağa ehtiyac yoxdur
+      connected = true;
+      clearTimeout(timer);
+
+      // Gemini-nin SSE axınını özümüzün sadə {delta}/{error}/{done} formatına çeviririk
+      const upstream = r.body.getReader();
+      const decoder = new TextDecoder();
+      const encoder = new TextEncoder();
+      let buffer = '';
+      let fullText = '';
+
+      const stream = new ReadableStream({
+        async pull(controller) {
+          while (true) {
+            const { done, value } = await upstream.read();
+            if (done) {
+              if (!fullText.trim()) {
+                await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax, rpmMax });
+                controller.enqueue(encoder.encode('data: ' + JSON.stringify({ error: 'Bu sual üçün cavab verə bilmədim. Başqa cür yazmağı yoxla.' }) + '\n\n'));
+              }
+              controller.enqueue(encoder.encode('data: ' + JSON.stringify({ done: true, remaining: gate.remaining }) + '\n\n'));
+              controller.close();
+              return;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            let idx;
+            let emitted = false;
+            while ((idx = buffer.indexOf('\n\n')) !== -1) {
+              const rawEvent = buffer.slice(0, idx);
+              buffer = buffer.slice(idx + 2);
+              const line = rawEvent.split('\n').find((l) => l.startsWith('data:'));
+              if (!line) continue;
+              const jsonStr = line.slice(5).trim();
+              if (!jsonStr) continue;
+              let obj;
+              try { obj = JSON.parse(jsonStr); } catch { continue; }
+              const cparts = (obj.candidates && obj.candidates[0] && obj.candidates[0].content && obj.candidates[0].content.parts) || [];
+              const text = cparts.map((p) => p.text || '').join('');
+              if (text) {
+                fullText += text;
+                controller.enqueue(encoder.encode('data: ' + JSON.stringify({ delta: text }) + '\n\n'));
+                emitted = true;
+              }
+            }
+            if (emitted) return; // bir pull-da bir qədər mətn göndərib brauzerə nəfəs ver
+          }
+        },
+        async cancel() { try { await upstream.cancel(); } catch {} },
+      });
+
+      return new Response(stream, {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store', 'Connection': 'keep-alive', ...corsHeaders(origin) },
+      });
     } catch (e) {
-      await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax });
+      if (!connected) await limiter(env, { action: 'refund', ipHash, day, perIp, globalMax, rpmMax });
       console.error(String(e));
       return json({ error: 'CaspAI indi cavab verə bilmir. Bir az sonra yenidən yoxla.', remaining: gate.remaining + 1 }, 502, origin);
     } finally {

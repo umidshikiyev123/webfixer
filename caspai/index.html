@@ -124,6 +124,28 @@ async function loadStatus() {
 }
 loadStatus();
 
+// Axını sətir-sətir oxuyub, hər "data: {...}\n\n" paketini parçalayır
+async function* readSSE(res) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buffer.indexOf('\n\n')) !== -1) {
+      const rawEvent = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+      const line = rawEvent.split('\n').find(l => l.startsWith('data:'));
+      if (!line) continue;
+      const jsonStr = line.slice(5).trim();
+      if (!jsonStr) continue;
+      try { yield JSON.parse(jsonStr); } catch { /* keç */ }
+    }
+  }
+}
+
 form.addEventListener('submit', async e => {
   e.preventDefault();
   if (busy) return;
@@ -136,7 +158,9 @@ form.addEventListener('submit', async e => {
   input.value = '';
   autoResize();
   setBusy(true);
-  const wait = addMsg('ai', 'CaspAI yazır…', 'wait');
+  const bubble = addMsg('ai', 'CaspAI yazır…', 'wait');
+  let started = false; // ilk mətn parçası gələndə "yazır…" görünüşünü aradan qaldırır
+  let fullText = '';
 
   try {
     const res = await fetch(WORKER_BASE + '/chat', {
@@ -144,18 +168,43 @@ form.addEventListener('submit', async e => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history.slice(-12) }),
     });
-    const data = await res.json().catch(() => ({}));
-    wait.remove();
-    if (!res.ok || data.error) {
-      addMsg('ai', data.error || ('Xəta: ' + res.status), 'err');
-    } else {
-      addMsg('ai', data.reply || '...');
-      history.push({ role: 'assistant', content: data.reply || '' });
+
+    if (!res.ok || !res.body) {
+      const data = await res.json().catch(() => ({}));
+      bubble.classList.remove('wait');
+      bubble.classList.add('err');
+      bubble.textContent = data.error || ('Xəta: ' + res.status);
+      if (typeof data.remaining === 'number') showRemain(data.remaining);
+      return;
     }
-    if (typeof data.remaining === 'number') showRemain(data.remaining);
+
+    let remaining = null, gotError = null;
+    for await (const ev of readSSE(res)) {
+      if (ev.delta) {
+        if (!started) { started = true; bubble.classList.remove('wait'); }
+        fullText += ev.delta;
+        bubble.innerHTML = formatReply(fullText) + '<span class="cai-caret"></span>';
+        scrollDown();
+      }
+      if (ev.error) gotError = ev.error;
+      if (typeof ev.remaining === 'number') remaining = ev.remaining;
+    }
+
+    bubble.classList.remove('wait');
+    if (gotError && !fullText) {
+      bubble.classList.add('err');
+      bubble.textContent = gotError;
+    } else {
+      bubble.innerHTML = formatReply(fullText || '...');
+      if (fullText) history.push({ role: 'assistant', content: fullText });
+    }
+    if (remaining != null) showRemain(remaining);
   } catch (err) {
-    wait.remove();
-    addMsg('ai', 'Serverə qoşulmaq olmadı. İnternet bağlantınızı yoxlayıb yenidən yazın.', 'err');
+    bubble.classList.remove('wait');
+    bubble.classList.add('err');
+    bubble.textContent = fullText
+      ? 'Bağlantı kəsildi, cavab yarımçıq qala bilər.'
+      : 'Serverə qoşulmaq olmadı. İnternet bağlantınızı yoxlayıb yenidən yazın.';
   } finally {
     setBusy(false);
     input.focus();
