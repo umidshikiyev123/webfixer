@@ -31,6 +31,7 @@
   </div>
 
   <div class="cai-log" id="log">
+    <div class="cai-drop" id="drop"><div class="cai-drop-in">Şəkli buraya burax</div></div>
     <div class="cai-log-in" id="logIn">
       <div class="cai-msg ai">Salam! Mən CaspAI-yam 👋 İdman/məşq proqramından dərs izahına, gündəlik sadə suallara qədər — nə lazımdırsa soruş, danışaq.</div>
       <div class="cai-sugg" id="sugg">
@@ -43,7 +44,15 @@
 
   <div class="cai-foot">
     <div class="cai-foot-in">
+      <div class="cai-preview" id="imgPreview" hidden>
+        <img id="imgPreviewImg" alt="Seçilmiş şəkil">
+        <button type="button" id="imgRemove" aria-label="Şəkli sil">✕</button>
+      </div>
       <form class="cai-form" id="form">
+        <input type="file" id="imgInput" accept="image/png,image/jpeg,image/webp,image/heic,image/heif" hidden>
+        <button class="cai-attach" id="attach" type="button" aria-label="Şəkil əlavə et">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a5 5 0 0 1-7.07-7.07l8.49-8.49a3.5 3.5 0 0 1 4.95 4.95L9.17 18.17a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
         <textarea id="input" maxlength="500" rows="1" placeholder="Mesaj yaz..." aria-label="Mesaj"></textarea>
         <button class="cai-send" id="send" type="submit" aria-label="Göndər">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
@@ -61,6 +70,11 @@ const log = $('#log'), logIn = $('#logIn'), form = $('#form'), input = $('#input
 
 let history = []; // {role:'user'|'assistant', content}
 let busy = false;
+let pendingImage = null; // {mimeType, data} — base64 (prefiksiz)
+
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/heic', 'image/heif'];
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const attachBtn = $('#attach'), imgInput = $('#imgInput'), imgPreview = $('#imgPreview'), imgPreviewImg = $('#imgPreviewImg'), imgRemove = $('#imgRemove'), drop = $('#drop');
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -88,6 +102,7 @@ function setBusy(b) {
   busy = b;
   send.disabled = b;
   input.disabled = b;
+  attachBtn.disabled = b;
 }
 
 function autoResize() {
@@ -114,6 +129,70 @@ function showRemain(n) {
   remainEl.textContent = n > 0 ? `Bu gün: ${n} mesaj qaldı` : 'Bu günlük limit bitdi';
   remainEl.classList.toggle('zero', n <= 0);
 }
+
+function setImageError(msg) {
+  const b = addMsg('ai', msg, 'err');
+  return b;
+}
+
+function fileToImage(file) {
+  if (!file) return;
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    setImageError('Dəstəklənməyən şəkil formatı. PNG, JPG, WEBP və ya HEIC istifadə edin.');
+    return;
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    setImageError('Şəkil çox böyükdür (maks. ~4MB). Daha kiçik şəkil göndərin.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    const base64 = String(dataUrl).split(',')[1] || '';
+    pendingImage = { mimeType: file.type, data: base64 };
+    imgPreviewImg.src = dataUrl;
+    imgPreview.hidden = false;
+  };
+  reader.onerror = () => setImageError('Şəkil oxuna bilmədi. Yenidən sınayın.');
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  pendingImage = null;
+  imgPreview.hidden = true;
+  imgPreviewImg.src = '';
+  imgInput.value = '';
+}
+
+attachBtn.addEventListener('click', () => { if (!busy) imgInput.click(); });
+imgInput.addEventListener('change', () => {
+  const file = imgInput.files && imgInput.files[0];
+  fileToImage(file);
+});
+imgRemove.addEventListener('click', clearImage);
+
+// sürükləyib-burax: bütün chat sahəsi üzərində
+['dragenter', 'dragover'].forEach(ev => {
+  log.addEventListener(ev, e => {
+    if (busy) return;
+    e.preventDefault();
+    drop.classList.add('show');
+  });
+});
+['dragleave', 'drop'].forEach(ev => {
+  log.addEventListener(ev, e => {
+    e.preventDefault();
+    if (ev === 'drop') return;
+    if (e.target === log || e.target === drop || !log.contains(e.relatedTarget)) drop.classList.remove('show');
+  });
+});
+log.addEventListener('drop', e => {
+  e.preventDefault();
+  drop.classList.remove('show');
+  if (busy) return;
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) fileToImage(file);
+});
 
 async function loadStatus() {
   try {
@@ -150,12 +229,29 @@ form.addEventListener('submit', async e => {
   e.preventDefault();
   if (busy) return;
   const text = input.value.trim();
-  if (!text) return;
+  const image = pendingImage;
+  if (!text && !image) return;
 
   hideSugg();
-  addMsg('user', text);
-  history.push({ role: 'user', content: text });
+  if (image) {
+    const d = document.createElement('div');
+    d.className = 'cai-msg me cai-msg-img';
+    if (text) {
+      const p = document.createElement('div');
+      p.textContent = text;
+      d.appendChild(p);
+    }
+    const im = document.createElement('img');
+    im.src = imgPreviewImg.src;
+    d.appendChild(im);
+    logIn.appendChild(d);
+    scrollDown();
+  } else {
+    addMsg('user', text);
+  }
+  history.push({ role: 'user', content: text || '(şəkil göndərildi)' });
   input.value = '';
+  clearImage();
   autoResize();
   setBusy(true);
   const bubble = addMsg('ai', 'CaspAI yazır…', 'wait');
@@ -166,7 +262,7 @@ form.addEventListener('submit', async e => {
     const res = await fetch(WORKER_BASE + '/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: history.slice(-12) }),
+      body: JSON.stringify({ messages: history.slice(-12), image: image || undefined }),
     });
 
     if (!res.ok || !res.body) {

@@ -27,6 +27,8 @@ Qaydalar:
 const MAX_MESSAGES = 6;      // modelə göndərilən son mesaj sayı (xərcə qənaət)
 const MAX_USER_CHARS = 500;  // bir mesajın maksimum uzunluğu
 const MAX_MODEL_CHARS = 1500; // tarixçədəki köhnə cavablar bu qədər kəsilir
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/heic', 'image/heif'];
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // base64-dən əvvəlki təxmini orijinal ölçü həddi
 
 function num(v, d) { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : d; }
 
@@ -99,6 +101,27 @@ function cleanMessages(raw) {
   return out;
 }
 
+// Sonuncu (cari) istifadəçi mesajına, varsa, şəkli əlavə edir. Yoxlamalar: növ, ölçü.
+function attachImage(contents, image) {
+  if (!image) return { contents, error: null };
+  if (!image.mimeType || !ALLOWED_IMAGE_TYPES.includes(image.mimeType)) {
+    return { contents, error: 'Dəstəklənməyən şəkil formatı. PNG, JPG, WEBP və ya HEIC istifadə edin.' };
+  }
+  if (typeof image.data !== 'string' || !image.data) {
+    return { contents, error: 'Şəkil oxuna bilmədi. Yenidən sınayın.' };
+  }
+  // base64 uzunluğu ~ orijinal ölçünün 4/3-ü qədərdir
+  const approxBytes = Math.floor(image.data.length * 0.75);
+  if (approxBytes > MAX_IMAGE_BYTES) {
+    return { contents, error: 'Şəkil çox böyükdür (maks. ~4MB). Daha kiçik şəkil göndərin.' };
+  }
+  if (!contents || !contents.length || contents[contents.length - 1].role !== 'user') {
+    return { contents, error: 'Şəkli əlavə etmək mümkün olmadı.' };
+  }
+  contents[contents.length - 1].parts.push({ inlineData: { mimeType: image.mimeType, data: image.data } });
+  return { contents, error: null };
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -135,8 +158,12 @@ export default {
 
     let payload;
     try { payload = await req.json(); } catch { return json({ error: 'Yanlış sorğu.' }, 400, origin); }
-    const contents = cleanMessages(payload && payload.messages);
+    let contents = cleanMessages(payload && payload.messages);
     if (!contents) return json({ error: 'Mesaj boşdur və ya yanlışdır.' }, 400, origin);
+
+    const imgRes = attachImage(contents, payload && payload.image);
+    if (imgRes.error) return json({ error: imgRes.error }, 400, origin);
+    contents = imgRes.contents;
 
     // Limiti Gemini-yə getməzdən ƏVVƏL sayırıq ki, sorğu spamı pul xərcləməsin
     const gate = await limiter(env, { action: 'take', ipHash, day, perIp, globalMax, rpmMax });

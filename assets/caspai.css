@@ -15,7 +15,13 @@ body.cai-body{margin:0;background:var(--white)}
 .cai-left{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap}
 .cai-left.zero{color:var(--danger);font-weight:600}
 
-.cai-log{flex:1;overflow-y:auto;padding:22px 16px;-webkit-overflow-scrolling:touch}
+.cai-log{position:relative;flex:1;overflow-y:auto;padding:22px 16px;-webkit-overflow-scrolling:touch}
+.cai-drop{display:none;position:sticky;top:0;z-index:5;pointer-events:none}
+.cai-drop.show{display:flex}
+.cai-drop-in{position:fixed;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.12);
+  border:3px dashed var(--blue);border-radius:0;font-weight:700;font-size:1.1rem;color:var(--blue);backdrop-filter:blur(1px)}
+.cai-msg-img img{display:block;max-width:220px;max-height:220px;border-radius:14px;margin-top:6px;object-fit:cover}
+.cai-msg-img{padding-bottom:8px}
 .cai-log-in{display:flex;flex-direction:column;gap:12px;width:100%;max-width:760px;margin:0 auto}
 .cai-msg{max-width:78%;padding:10px 16px;border-radius:22px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.98rem}
 .cai-msg.ai{align-self:flex-start;background:var(--sky);color:var(--ink);border-bottom-left-radius:6px}
@@ -33,7 +39,17 @@ body.cai-body{margin:0;background:var(--white)}
 
 .cai-foot{background:var(--surface);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
 .cai-foot-in{width:100%;max-width:760px;margin:0 auto}
+.cai-preview{display:flex;align-items:center;gap:0;margin:0 0 10px;width:100%;max-width:760px}
+.cai-preview[hidden]{display:none}
+.cai-preview{position:relative;width:64px;height:64px}
+.cai-preview img{width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid var(--line);display:block}
+.cai-preview button{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--ink);color:#fff;font-size:.7rem;line-height:1;display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .cai-form{display:flex;gap:10px;align-items:flex-end}
+.cai-attach{cursor:pointer;flex:none;display:grid;place-items:center;width:44px;height:48px;padding:0;border-radius:14px;border:1px solid var(--line);
+  background:var(--white);color:var(--muted);transition:background .2s,color .2s}
+.cai-attach:hover{background:var(--sky);color:var(--blue)}
+.cai-attach:disabled{opacity:.5;cursor:not-allowed}
 .cai-form textarea{flex:1;resize:none;height:48px;min-height:48px;max-height:140px;padding:12px 20px;border:1px solid var(--line);border-radius:24px;
   background:var(--white);font-family:var(--sans);font-size:1rem;line-height:1.4;overflow-y:auto}
 .cai-form textarea::placeholder{color:var(--muted);font-family:var(--sans)}
